@@ -1,36 +1,273 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+ScrapeFlow
 
-## Getting Started
+ScrapeFlow is a visual workflow builder for web scraping automation. It allows users to design scraping pipelines using a node-based interface, manage credentials securely, and persist workflows for execution.
 
-First, run the development server:
+Unlike simple scraping tools, ScrapeFlow is built as a mini SaaS platform, combining a visual editor with backend systems for authentication, storage, and future execution pipelines.
 
-```bash
+✨ Key Features
+🧠 Visual Workflow Builder
+
+Drag-and-drop node editor powered by React Flow
+
+Create complex scraping pipelines visually
+
+Connect node outputs → inputs dynamically
+
+Extendable node system via task registry
+
+🔐 Secure Credential Management
+
+Store API keys, cookies, headers, and login credentials
+
+Secrets are masked in UI
+
+Credentials scoped per user
+
+Prevents raw secret exposure in workflows
+
+💾 Workflow Persistence
+
+Save workflows to database
+
+Reload and edit existing flows
+
+Graph structure stored as JSON
+
+👤 Authentication System
+
+Clerk-based authentication
+
+User-specific workflows and credentials
+
+Access control on all resources
+
+🧩 Registry-Based Node System
+
+Each node is defined via metadata:
+
+label
+
+icon
+
+inputs
+
+outputs
+
+Dynamic rendering of nodes
+
+Easy to extend with new scraping tasks
+
+🏗️ Architecture Overview
+
+ScrapeFlow follows a modular SaaS architecture:
+
+Frontend (Next.js + React Flow)
+        ↓
+API Layer (Next.js Server Actions / Routes)
+        ↓
+Database (Prisma + SQLite)
+        ↓
+Auth Layer (Clerk)
+Core Modules
+
+Workflow Engine (UI) → Node editor & graph builder
+
+Credential Manager → Secure storage of secrets
+
+Task Registry → Defines node types
+
+Persistence Layer → Saves workflows & credentials
+
+Auth Layer → User isolation & protection
+
+🛠️ Tech Stack
+Frontend
+
+Next.js 14 (App Router)
+
+React 18
+
+TypeScript
+
+Tailwind CSS
+
+Radix UI / shadcn components
+
+React Hook Form
+
+Zod (validation)
+
+@xyflow/react (React Flow)
+
+Backend
+
+Next.js API / Server Actions
+
+Prisma ORM
+
+SQLite (dev database)
+
+Authentication
+
+Clerk
+
+📂 Project Structure (Simplified)
+/app
+  /dashboard
+  /workflows
+  /credentials
+
+/components
+  /ui
+  /workflow-editor
+  /nodes
+
+/lib
+  /prisma
+  /auth
+  /validators
+
+/registry
+  taskRegistry.ts
+
+/prisma
+  schema.prisma
+⚙️ Getting Started
+1. Clone the Repository
+git clone https://github.com/your-username/scrapeflow.git
+cd scrapeflow
+2. Install Dependencies
+npm install
+3. Setup Environment Variables
+
+Create a .env file:
+
+DATABASE_URL="file:./dev.db"
+
+# Clerk (example)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
+CLERK_SECRET_KEY=your_secret
+4. Setup Database
+npx prisma migrate dev
+5. Run the App
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+👉 http://localhost:3000
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+🔐 Credential Handling Design
 
-## Learn More
+ScrapeFlow follows strict rules for handling sensitive data:
 
-To learn more about Next.js, take a look at the following resources:
+❌ Raw secrets are never stored in workflow JSON
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+✅ Credentials are stored separately and referenced via credentialId
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+🔒 Values are masked in UI (••••••)
 
-## Deploy on Vercel
+👤 Scoped per user for isolation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+🧩 Node System Design
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Each node is defined via a task registry:
+
+{
+  type: "HTTP_REQUEST",
+  label: "HTTP Request",
+  icon: "Globe",
+  inputs: [...],
+  outputs: [...]
+}
+Benefits:
+
+Plug-and-play extensibility
+
+No hardcoding UI for nodes
+
+Easy to add new scraping steps
+
+🚧 Current Limitations
+
+No execution engine yet
+
+No real-time scraping
+
+SQLite (not production-ready)
+
+No background job processing
+
+Limited node types
+
+🛣️ Roadmap
+🔥 Phase 1 (In Progress)
+
+Workflow execution engine
+
+Credential injection into nodes
+
+Node runtime system
+
+⚙️ Phase 2
+
+Background job queue (BullMQ / Redis)
+
+Execution logs & debugging
+
+Retry & failure handling
+
+💰 Phase 3
+
+Usage tracking
+
+Billing system (credits/subscription)
+
+Rate limits
+
+📊 Phase 4
+
+Analytics dashboard
+
+Workflow performance insights
+
+💡 Future Vision
+
+ScrapeFlow aims to become:
+
+A Zapier-like automation platform for web scraping
+
+Where users can:
+
+Automate data extraction
+
+Chain scraping workflows
+
+Integrate with APIs and databases
+
+Run workflows at scale
+
+🤝 Contributing
+
+Contributions are welcome!
+
+Fork the repo
+
+Create a feature branch
+
+Commit your changes
+
+Open a pull request
+
+📜 License
+
+MIT License
+
+👨‍💻 Author
+
+Rakshit Dave
+
+MERN Stack Developer
+
+Building scalable SaaS products
+
+Interested in automation, AI, and system design
