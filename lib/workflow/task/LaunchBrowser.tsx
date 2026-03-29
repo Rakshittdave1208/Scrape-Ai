@@ -3,8 +3,10 @@ import { GlobeIcon } from "lucide-react";
 
 export const LaunchBrowserTask = {
   type: TaskType.LAUNCH_BROWSER,
+  nodeType: "scraperNode",
   label: "Launch Browser",
   icon: GlobeIcon,
+  category: "Browser",
   isEntryPoint: true,
   inputs: [
     {

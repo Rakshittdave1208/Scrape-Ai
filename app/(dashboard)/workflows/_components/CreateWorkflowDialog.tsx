@@ -67,7 +67,6 @@ export default function CreateWorkflowDialog({
     },
 
     onError: (error) => {
-      console.error(error);
       toast.error("Failed to create workflow", { id: "create-workflow" });
     },
   });

@@ -14,8 +14,8 @@ const NodeComponent = memo((props: NodeProps) => {
   const task = TaskRegistry[nodeData.type];
 
   return (
-    <NodeCard nodeId={props.id} isSelected={!!props.selected}>
-      <NodeHeader taskType={nodeData.type} nodeId={props.id} />
+    <NodeCard nodeId={props.id} isSelected={!!props.selected} status={nodeData.status}>
+      <NodeHeader taskType={nodeData.type} nodeId={props.id} status={nodeData.status} />
       <NodeInputs>
         {task.inputs.map((input) => (
           <NodeInput key={input.name} input={input} nodeId={props.id} />
@@ -23,9 +23,10 @@ const NodeComponent = memo((props: NodeProps) => {
       </NodeInputs>
       <NodeOutputs>
         {task.outputs.map((output) => (
-          <NodeOutput key={output.name} output={output} />
+          <NodeOutput key={output.name} output={output} nodeId={props.id} />
         ))}
       </NodeOutputs>
+      {nodeData.error && <p className="px-3 pb-3 text-[11px] text-destructive">{nodeData.error}</p>}
     </NodeCard>
   );
 });

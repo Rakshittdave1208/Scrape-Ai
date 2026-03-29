@@ -10,9 +10,11 @@ import { CopyIcon, CoinsIcon, MoveHorizontalIcon, Trash2Icon } from "lucide-reac
 function NodeHeader({
   taskType,
   nodeId,
+  status,
 }: {
   taskType: TaskType;
   nodeId: string;
+  status: "idle" | "running" | "success" | "error";
 }) {
   const task = TaskRegistry[taskType];
   const { deleteElements, getNode, setNodes } = useReactFlow();
@@ -26,6 +28,9 @@ function NodeHeader({
         </p>
         <div className="flex gap-1 items-center">
           {task.isEntryPoint && <Badge className="nodrag" variant="outline">Entry point</Badge>}
+          <Badge className="nodrag capitalize" variant="outline">
+            {status}
+          </Badge>
           <Badge className="nodrag gap-2 flex items-center text-xs" variant="outline">
             <CoinsIcon size={16} />
             {task.credits}

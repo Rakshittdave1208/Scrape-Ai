@@ -27,6 +27,8 @@ function NodeParamField({
 
   switch (param.type) {
     case TaskParamType.STRING:
+    case TaskParamType.NUMBER:
+    case TaskParamType.JSON:
       return <StringParam param={param} nodeId={nodeId} disabled={disabled} />;
     default:
       return (

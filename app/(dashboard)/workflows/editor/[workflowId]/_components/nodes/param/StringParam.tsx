@@ -3,9 +3,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { TaskParam } from "@/types/task";
+import { TaskParam, TaskParamType } from "@/types/task";
 import { useReactFlow } from "@xyflow/react";
-import { CaseSensitiveIcon, LinkIcon, PencilLineIcon } from "lucide-react";
+import { BracesIcon, CaseSensitiveIcon, HashIcon, LinkIcon, PencilLineIcon } from "lucide-react";
 import { useCallback, useEffect, useId, useState } from "react";
 import { AppNode } from "@/types/appNode";
 
@@ -27,6 +27,8 @@ function StringParam({
   const [isFocused, setIsFocused] = useState(false);
   const trimmedValue = internalValue.trim();
   const isUrlField = param.inputType === "url";
+  const isNumberField = param.type === TaskParamType.NUMBER || param.inputType === "number";
+  const isJsonField = param.type === TaskParamType.JSON;
   const looksLikeUrl =
     !isUrlField || trimmedValue.length === 0 || /^https?:\/\/.+/i.test(trimmedValue);
   const hasValue = trimmedValue.length > 0;
@@ -68,14 +70,22 @@ function StringParam({
           </Label>
         </div>
         <Badge variant="outline" className="select-text gap-1 text-[10px] uppercase tracking-wide">
-          {isUrlField ? <LinkIcon size={10} /> : <CaseSensitiveIcon size={10} />}
-          {isUrlField ? "URL" : "String"}
+          {isUrlField ? (
+            <LinkIcon size={10} />
+          ) : isNumberField ? (
+            <HashIcon size={10} />
+          ) : isJsonField ? (
+            <BracesIcon size={10} />
+          ) : (
+            <CaseSensitiveIcon size={10} />
+          )}
+          {isUrlField ? "URL" : isNumberField ? "Number" : isJsonField ? "JSON" : "String"}
         </Badge>
       </div>
 
       <Input
         id={id}
-        type={param.inputType ?? "text"}
+        type={isNumberField ? "number" : param.inputType ?? "text"}
         disabled={disabled}
         className="nodrag border-none bg-transparent px-0 text-sm shadow-none focus-visible:ring-0"
         value={internalValue}
@@ -97,6 +107,8 @@ function StringParam({
               ? "Required"
               : isUrlField && !looksLikeUrl
                 ? "Enter a valid URL starting with http:// or https://"
+                : isJsonField
+                  ? "JSON-ready input"
                 : "Manual value ready"}
         </span>
         <span className="select-text">{internalValue.length} chars</span>

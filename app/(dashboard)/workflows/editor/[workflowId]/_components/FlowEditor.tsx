@@ -1,158 +1,165 @@
 "use client";
 
-import type { WorkflowForEditor } from "./Editor";
-import { updateWorkflow } from "@/actions/workflows/updateWorkflow";
+import "@xyflow/react/dist/style.css";
+
+import { useCallback } from "react";
 import {
-  addEdge,
   Background,
   BackgroundVariant,
-  Connection,
   Controls,
-  Edge,
+  MiniMap,
   Panel,
   ReactFlow,
-  useEdgesState,
-  useNodesState,
-  useReactFlow,
 } from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-import NodeComponent from "./nodes/NodeComponent";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { AppNode } from "@/types/appNode";
-import { TaskType } from "@/types/task";
-import { createFlowNode } from "@/lib/workflow/createFlowNode";
+import { AlertTriangleIcon, PlayIcon, RefreshCcwIcon, SaveIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
-const nodeTypes = {
-  appNode: NodeComponent,
-};
+import type { WorkflowForEditor } from "./Editor";
+import { nodeTypes } from "./canvas/nodeTypes";
+import { Button } from "@/components/ui/button";
+import { WORKFLOW_SNAP_GRID } from "@/lib/workflow/graph";
+import { useWorkflowCanvas } from "@/hooks/useWorkflowCanvas";
 
-const fitViewOptions = { padding: 1 };
-const SAVE_DELAY_MS = 700;
+const fitViewOptions = { padding: 0.16 };
 
 export default function FlowEditor({
   workflow,
 }: {
   workflow: WorkflowForEditor;
 }) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<AppNode>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-  const [viewportState, setViewportState] = useState({ x: 0, y: 0, zoom: 1 });
-  const hasHydratedRef = useRef(false);
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { getViewport, setViewport, screenToFlowPosition } = useReactFlow();
-
-  useEffect(() => {
-    try {
-      const { nodes = [], edges = [], viewport } = JSON.parse(workflow.definition);
-      setNodes(nodes);
-      setEdges(edges);
-
-      if (viewport) {
-        const { x = 0, y = 0, zoom = 1 } = viewport;
-        setViewport({ x, y, zoom });
-        setViewportState({ x, y, zoom });
-      } else {
-        setViewportState({ x: 0, y: 0, zoom: 1 });
-      }
-    } catch {
-      setNodes([]);
-      setEdges([]);
-      setViewportState({ x: 0, y: 0, zoom: 1 });
-    } finally {
-      hasHydratedRef.current = true;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [workflow.definition]);
-
-  useEffect(() => {
-    if (!hasHydratedRef.current) {
-      return;
-    }
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      const definition = JSON.stringify({
-        nodes,
-        edges,
-        viewport: getViewport(),
-      });
-
-      void updateWorkflow(workflow.id, definition);
-    }, SAVE_DELAY_MS);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [edges, getViewport, nodes, viewportState, workflow.id]);
+  const {
+    nodes,
+    edges,
+    onNodesChange,
+    onEdgesChange,
+    onConnect,
+    canConnect,
+    onDrop,
+    syncViewportState,
+    saveToLocalStorage,
+    loadFromLocalStorage,
+    runWorkflow,
+    creditsRemaining,
+    executionLogs,
+    executionError,
+    clearBrokenState,
+    contextMenuPosition,
+    openContextMenu,
+    closeContextMenu,
+    deleteContextNode,
+  } = useWorkflowCanvas({
+    workflowId: workflow.id,
+    definition: workflow.definition,
+  });
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
 
-  const onDrop = useCallback(
-    (event: React.DragEvent) => {
-      event.preventDefault();
-      const type = event.dataTransfer.getData("taskType");
-      if (!type) return;
-
-      const position = screenToFlowPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
-
-      const newNode = createFlowNode(type as TaskType, position);
-      setNodes((nds) => [...nds, newNode]);
-    },
-    [screenToFlowPosition, setNodes]
-  );
-
-  const onConnect = useCallback(
-    (params: Connection) => {
-      setEdges((eds) => addEdge(params, eds));
-    },
-    [setEdges]
-  );
-
-  const syncViewportState = useCallback(() => {
-    setViewportState(getViewport());
-  }, [getViewport]);
-
   return (
-    <main className="h-full min-h-0 flex-1">
+    <main className="relative h-full min-h-0 flex-1" onClick={closeContextMenu}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onEdgesChange={onEdgesChange}
-        onNodesChange={onNodesChange}
         nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        isValidConnection={canConnect}
+        fitView
         fitViewOptions={fitViewOptions}
         connectionRadius={30}
         deleteKeyCode={["Backspace", "Delete"]}
+        snapToGrid
+        snapGrid={WORKFLOW_SNAP_GRID}
         elevateEdgesOnSelect
         elevateNodesOnSelect
-        fitView
         onDragOver={onDragOver}
         onDrop={onDrop}
-        onConnect={onConnect}
         onMoveEnd={syncViewportState}
         onNodeDragStop={syncViewportState}
+        onNodeContextMenu={(event, node) => {
+          event.preventDefault();
+          openContextMenu(node.id, { x: event.clientX, y: event.clientY });
+        }}
       >
+        <Panel
+          position="top-left"
+          className="flex items-center gap-2 rounded-md border bg-background/95 p-2 shadow-sm backdrop-blur"
+        >
+          <Button type="button" size="sm" variant="outline" onClick={saveToLocalStorage}>
+            <SaveIcon size={14} />
+            Save Workflow
+          </Button>
+          <Button type="button" size="sm" variant="outline" onClick={loadFromLocalStorage}>
+            <UploadIcon size={14} />
+            Load Workflow
+          </Button>
+          <Button type="button" size="sm" onClick={runWorkflow}>
+            <PlayIcon size={14} />
+            Execute
+          </Button>
+          <Button type="button" size="sm" variant="ghost" onClick={clearBrokenState}>
+            <RefreshCcwIcon size={14} />
+            Reset
+          </Button>
+        </Panel>
+
         <Panel
           position="top-center"
           className="rounded-md border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
         >
-          Use the task buttons to add nodes. Connect by dragging from a right dot to a left dot. Changes
-          are saved automatically.
+          Drag node types from the sidebar, connect matching handles, save locally or to the workflow
+          definition, and run the graph when ready.
         </Panel>
-        <Controls position="top-left" fitViewOptions={fitViewOptions} />
+
+        <Panel
+          position="top-right"
+          className="rounded-md border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
+        >
+          Credits remaining: <span className="font-semibold text-foreground">{creditsRemaining}</span>
+        </Panel>
+
+        {(executionError || executionLogs.length > 0) && (
+          <Panel
+            position="bottom-left"
+            className="w-[320px] rounded-md border bg-background/95 p-3 text-xs shadow-sm backdrop-blur"
+          >
+            <div className="mb-2 flex items-center gap-2 font-semibold">
+              <AlertTriangleIcon size={14} />
+              Execution
+            </div>
+            {executionError && <p className="mb-2 text-destructive">{executionError}</p>}
+            <div className="space-y-1 text-muted-foreground">
+              {executionLogs.map((log) => (
+                <p key={log}>{log}</p>
+              ))}
+            </div>
+          </Panel>
+        )}
+
+        <Controls position="bottom-right" fitViewOptions={fitViewOptions} />
+        <MiniMap pannable zoomable className="!bg-background/95 !border" />
         <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
       </ReactFlow>
+
+      {contextMenuPosition && (
+        <div
+          className="absolute z-50 min-w-44 rounded-md border bg-background p-1 shadow-lg"
+          style={{ left: contextMenuPosition.x, top: contextMenuPosition.y }}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-full justify-start text-destructive hover:text-destructive"
+            onClick={deleteContextNode}
+          >
+            <Trash2Icon size={14} />
+            Delete node
+          </Button>
+        </div>
+      )}
     </main>
   );
 }

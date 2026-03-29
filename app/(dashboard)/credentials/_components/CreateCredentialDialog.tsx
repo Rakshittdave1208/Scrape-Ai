@@ -71,7 +71,6 @@ export default function CreateCredentialDialog() {
           setOpen(false);
           router.refresh();
         } catch (error) {
-          console.error(error);
           toast.error("Failed to create credential", { id: "create-credential" });
         }
       });

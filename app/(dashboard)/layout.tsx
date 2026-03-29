@@ -24,7 +24,7 @@ const layout = ({ children }: { children: React.ReactNode }) => {
         </header>
         <Separator />
         <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
-          <div className="container flex flex-1 min-h-0 flex-col overflow-y-auto py-4 text-accent-foreground">
+          <div className="flex w-full max-w-none flex-1 min-h-0 flex-col overflow-y-auto px-4 py-4 text-accent-foreground md:px-6">
             {children}
           </div>
         </div>

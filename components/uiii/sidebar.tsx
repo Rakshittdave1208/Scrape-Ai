@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  GitBranchIcon,
   CoinsIcon,
   HomeIcon,
   Layers2Icon,
@@ -18,6 +19,7 @@ import { usePathname } from "next/navigation";
 const routes = [
   { href: "/", label: "Home", icon: HomeIcon },
   { href: "/workflows", label: "Workflows", icon: Layers2Icon },
+  { href: "/architecture", label: "Architecture", icon: GitBranchIcon },
   { href: "/credentials", label: "Credentials", icon: ShieldCheckIcon },
   { href: "/billing", label: "Billing", icon: CoinsIcon },
 ];

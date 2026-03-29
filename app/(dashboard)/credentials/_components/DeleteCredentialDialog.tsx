@@ -68,7 +68,6 @@ export default function DeleteCredentialDialog({
                   setOpen(false);
                   router.refresh();
                 } catch (error) {
-                  console.error(error);
                   toast.error("Failed to delete credential", { id: credentialId });
                 }
               });

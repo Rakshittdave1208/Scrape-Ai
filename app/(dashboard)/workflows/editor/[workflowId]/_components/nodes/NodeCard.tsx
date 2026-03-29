@@ -8,10 +8,12 @@ function NodeCard({
   children,
   nodeId,
   isSelected,
+  status,
 }: {
   children: React.ReactNode;
   nodeId: string;
   isSelected: boolean;
+  status: "idle" | "running" | "success" | "error";
 }) {
   const { getNode, setCenter } = useReactFlow();
 
@@ -28,8 +30,10 @@ function NodeCard({
         setCenter(x, y, { zoom: 1, duration: 500 });
       }}
       className={cn(
-        "flex w-[420px] flex-col gap-1 rounded-md border-2 border-separate bg-background text-xs",
-        isSelected && "border-primary"
+        "flex w-[400px] flex-col gap-1 rounded-md border-2 border-separate bg-background text-xs transition-colors",
+        isSelected && "border-primary",
+        status === "success" && "border-emerald-500/70",
+        status === "error" && "border-destructive"
       )}
     >
       {children}

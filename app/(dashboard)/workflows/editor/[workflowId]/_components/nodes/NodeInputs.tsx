@@ -6,6 +6,7 @@ import { Handle, Position, useEdges } from "@xyflow/react";
 import NodeParamField from "./NodeParamField";
 import { ColorForHandle } from "./common";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function NodeInputs({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col divide-y gap-2">{children}</div>;
@@ -37,12 +38,19 @@ export function NodeInput({
     <div className="relative flex w-full justify-start bg-secondary p-3">
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
-              Input
-            </Badge>
-            <p className="text-[11px] text-muted-foreground">{input.type}</p>
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-[10px] uppercase tracking-wide">
+                  Input
+                </Badge>
+                <p className="text-[11px] text-muted-foreground">{input.type}</p>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              {input.helperText ?? `${input.name} accepts ${input.type.toLowerCase()} data.`}
+            </TooltipContent>
+          </Tooltip>
           <p className="text-[11px] text-muted-foreground">{statusLabel}</p>
         </div>
         <NodeParamField
@@ -59,7 +67,8 @@ export function NodeInput({
           type="target"
           position={Position.Left}
           className={cn(
-            "!z-20 !-left-4 !h-6 !w-6 !rounded-full !border-2 !border-background !bg-muted-foreground shadow-md",
+            "!z-20 !-left-4 !h-6 !w-6 !rounded-full !border-2 !border-background !bg-muted-foreground shadow-md transition-all",
+            isConnected && "!ring-4 !ring-primary/30",
             ColorForHandle[input.type]
           )}
         />

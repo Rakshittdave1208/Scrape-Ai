@@ -87,7 +87,6 @@ export default function EditCredentialDialog({
         const secureCredential = await getCredentialForEdit(credential.id);
         form.reset(toFormValues(secureCredential));
       } catch (error) {
-        console.error(error);
         toast.error("Failed to load credential", { id: `load-${credential.id}` });
         setOpen(false);
       }
@@ -105,7 +104,6 @@ export default function EditCredentialDialog({
           setOpen(false);
           router.refresh();
         } catch (error) {
-          console.error(error);
           toast.error("Failed to update credential", { id: credential.id });
         }
       });

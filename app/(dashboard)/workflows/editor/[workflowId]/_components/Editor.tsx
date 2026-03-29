@@ -18,7 +18,7 @@ function Editor({ workflow }: { workflow: WorkflowForEditor }) {
   return (
     <ReactFlowProvider>
       <div className="flex h-full min-h-0 w-full flex-1 flex-col overflow-hidden rounded-lg border bg-background">
-        <section className="flex min-h-0 flex-1 overflow-hidden">
+        <section className="grid min-h-0 flex-1 grid-cols-[280px_minmax(0,1fr)] overflow-hidden xl:grid-cols-[292px_minmax(0,1fr)]">
           <TaskMenu />
           <FlowEditor workflow={workflow} />
         </section>

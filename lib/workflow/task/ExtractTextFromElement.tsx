@@ -3,8 +3,10 @@ import { TextIcon } from "lucide-react";
 
 export const ExtractTextFromElementTask = {
   type: TaskType.EXTRACT_TEXT_FROM_ELEMENT,
+  nodeType: "transformNode",
   label: "Extract text from element",
   icon: TextIcon,
+  category: "Extraction",
   inputs: [
     {
       name: "Html",
