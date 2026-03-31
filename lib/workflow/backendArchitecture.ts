@@ -67,6 +67,126 @@ export const architectureTemplates: Array<{
     cost: 110,
   },
   {
+    key: "kubernetes-cluster",
+    label: "Kubernetes Cluster",
+    description: "Container orchestration layer for deploying workflow services and workers.",
+    category: "infra",
+    config: { provider: "Kubernetes", autoscaling: true, workloads: ["api", "workers"] },
+    cost: 160,
+  },
+  {
+    key: "docker-host",
+    label: "Docker Host",
+    description: "Container host for packaging and running API services, workers, and utility jobs.",
+    category: "infra",
+    config: { runtime: "Docker", host: "VM", registry: "Docker Hub" },
+    cost: 100,
+  },
+  {
+    key: "aws-eks",
+    label: "AWS EKS",
+    description: "Managed Kubernetes cluster on AWS for scalable workflow workloads.",
+    category: "infra",
+    config: { provider: "AWS", service: "EKS", autoscaling: true },
+    cost: 175,
+  },
+  {
+    key: "aws-ecs",
+    label: "AWS ECS",
+    description: "Managed container orchestration for running workflow APIs and workers on AWS.",
+    category: "infra",
+    config: { provider: "AWS", service: "ECS", launchType: "Fargate" },
+    cost: 145,
+  },
+  {
+    key: "aws-lambda",
+    label: "AWS Lambda",
+    description: "Serverless execution for lightweight workflow handlers and event-driven tasks.",
+    category: "infra",
+    config: { provider: "AWS", service: "Lambda", trigger: "event" },
+    cost: 95,
+  },
+  {
+    key: "aws-s3",
+    label: "AWS S3 Bucket",
+    description: "Durable object storage for scraped files, exports, backups, and workflow artifacts.",
+    category: "infra",
+    config: { provider: "AWS", service: "S3", storageClass: "Standard", versioning: true },
+    cost: 80,
+  },
+  {
+    key: "aws-rds",
+    label: "AWS RDS",
+    description: "Managed relational database for transactional workflow metadata and billing state.",
+    category: "infra",
+    config: { provider: "AWS", service: "RDS", engine: "PostgreSQL" },
+    cost: 135,
+  },
+  {
+    key: "gke-cluster",
+    label: "Google Kubernetes Engine",
+    description: "Managed Kubernetes environment on Google Cloud for production workflow deployments.",
+    category: "infra",
+    config: { provider: "GCP", service: "GKE", autoscaling: true },
+    cost: 170,
+  },
+  {
+    key: "cloud-run",
+    label: "Google Cloud Run",
+    description: "Serverless containers for running APIs and event-driven workflow processors.",
+    category: "infra",
+    config: { provider: "GCP", service: "Cloud Run", scaling: "request-based" },
+    cost: 105,
+  },
+  {
+    key: "google-cloud-storage",
+    label: "Google Cloud Storage",
+    description: "Object storage for datasets, exports, logs, and generated workflow artifacts.",
+    category: "infra",
+    config: { provider: "GCP", service: "Cloud Storage", tier: "Standard" },
+    cost: 80,
+  },
+  {
+    key: "cloud-sql",
+    label: "Google Cloud SQL",
+    description: "Managed SQL database for workflow metadata, execution state, and application data.",
+    category: "infra",
+    config: { provider: "GCP", service: "Cloud SQL", engine: "PostgreSQL" },
+    cost: 130,
+  },
+  {
+    key: "cloud-load-balancer",
+    label: "Cloud Load Balancer",
+    description: "Distributes traffic across API and service instances in the cloud edge.",
+    category: "infra",
+    config: { provider: "AWS ALB", tls: true, routing: "path-based" },
+    cost: 95,
+  },
+  {
+    key: "object-storage",
+    label: "Object Storage",
+    description: "Stores scraped files, exports, and large workflow artifacts.",
+    category: "infra",
+    config: { provider: "S3", tier: "standard", versioning: true },
+    cost: 85,
+  },
+  {
+    key: "cloud-cache",
+    label: "Cloud Cache",
+    description: "High-speed caching layer for sessions, rate limits, and workflow state.",
+    category: "infra",
+    config: { provider: "Redis Cloud", mode: "cache", persistence: false },
+    cost: 90,
+  },
+  {
+    key: "observability-stack",
+    label: "Observability Stack",
+    description: "Centralized metrics, logs, and tracing for production workflow operations.",
+    category: "infra",
+    config: { logging: "ELK", metrics: "Prometheus", tracing: "OpenTelemetry" },
+    cost: 105,
+  },
+  {
     key: "external-infra",
     label: "External Infra",
     description: "External system such as Stripe webhooks or third-party integrations.",
@@ -96,7 +216,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "api-gateway",
     type: "architectureNode",
-    position: { x: 780, y: 290 },
+    position: { x: 780, y: 280 },
     data: {
       label: "API Gateway",
       description: "Primary entry point for authenticated requests, routing, validation, and orchestration.",
@@ -112,7 +232,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "auth-service",
     type: "architectureNode",
-    position: { x: 120, y: 560 },
+    position: { x: 80, y: 560 },
     data: {
       label: "Auth Service (Clerk)",
       description: "Handles user authentication, session verification, and identity resolution.",
@@ -128,7 +248,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "workflow-service",
     type: "architectureNode",
-    position: { x: 540, y: 560 },
+    position: { x: 500, y: 560 },
     data: {
       label: "Workflow Service",
       description: "Manages workflow definitions, node graphs, versions, and persisted workflow state.",
@@ -144,7 +264,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "execution-engine",
     type: "architectureNode",
-    position: { x: 960, y: 560 },
+    position: { x: 920, y: 560 },
     data: {
       label: "Execution Engine",
       description: "Builds DAG execution plans, resolves dependencies, and coordinates workflow runs.",
@@ -160,7 +280,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "billing-service",
     type: "architectureNode",
-    position: { x: 1380, y: 560 },
+    position: { x: 1340, y: 560 },
     data: {
       label: "Billing Service",
       description: "Tracks plans, credit usage, limits, and subscription-aware execution permissions.",
@@ -174,9 +294,41 @@ export const backendNodes: ArchitectureNode[] = [
     },
   },
   {
+    id: "cloud-cache",
+    type: "architectureNode",
+    position: { x: 1760, y: 560 },
+    data: {
+      label: "Cloud Cache",
+      description: "Caches sessions, workflow state, and hot execution metadata for fast reads.",
+      category: "infra",
+      technology: "Redis Cloud",
+      input: "",
+      error: null,
+      config: { provider: "Redis Cloud", mode: "cache", ttl: "15m" },
+      cost: 90,
+      status: "idle",
+    },
+  },
+  {
+    id: "aws-eks",
+    type: "architectureNode",
+    position: { x: 1760, y: 900 },
+    data: {
+      label: "AWS EKS",
+      description: "Managed Kubernetes cluster running API, execution, and worker workloads in the cloud.",
+      category: "infra",
+      technology: "AWS EKS",
+      input: "",
+      error: null,
+      config: { provider: "AWS", service: "EKS", workloads: ["api", "engine", "workers"] },
+      cost: 175,
+      status: "idle",
+    },
+  },
+  {
     id: "database",
     type: "architectureNode",
-    position: { x: 120, y: 900 },
+    position: { x: 80, y: 900 },
     data: {
       label: "Database (MongoDB)",
       description: "Stores workflows, credentials, execution logs, billing state, and usage records.",
@@ -192,7 +344,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "queue-system",
     type: "architectureNode",
-    position: { x: 540, y: 900 },
+    position: { x: 500, y: 900 },
     data: {
       label: "Queue System (Redis/BullMQ)",
       description: "Queues workflow jobs, handles retries, scheduling, and worker distribution.",
@@ -208,7 +360,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "node-executors",
     type: "architectureNode",
-    position: { x: 960, y: 900 },
+    position: { x: 920, y: 900 },
     data: {
       label: "Node Executors",
       description: "Runs task workers for Scraper, API, and Transform nodes.",
@@ -224,7 +376,7 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "stripe-webhook-handler",
     type: "architectureNode",
-    position: { x: 1380, y: 900 },
+    position: { x: 1340, y: 900 },
     data: {
       label: "Stripe Webhook Handler",
       description: "Processes Stripe subscription and payment events to update billing state.",
@@ -259,16 +411,40 @@ export const backendEdges: ArchitectureEdge[] = [
     label: "manage workflows",
   },
   {
+    id: "edge-api-cache",
+    source: "api-gateway",
+    target: "cloud-cache",
+    label: "cache sessions",
+  },
+  {
     id: "edge-workflow-db",
     source: "workflow-service",
     target: "database",
     label: "store workflow",
   },
   {
+    id: "edge-workflow-cache",
+    source: "workflow-service",
+    target: "cloud-cache",
+    label: "cache graph state",
+  },
+  {
     id: "edge-api-execution",
     source: "api-gateway",
     target: "execution-engine",
     label: "execute workflow",
+  },
+  {
+    id: "edge-eks-api",
+    source: "aws-eks",
+    target: "api-gateway",
+    label: "host api pods",
+  },
+  {
+    id: "edge-eks-engine",
+    source: "aws-eks",
+    target: "execution-engine",
+    label: "run engine pods",
   },
   {
     id: "edge-execution-billing",
@@ -287,6 +463,12 @@ export const backendEdges: ArchitectureEdge[] = [
     source: "queue-system",
     target: "node-executors",
     label: "process job",
+  },
+  {
+    id: "edge-eks-workers",
+    source: "aws-eks",
+    target: "node-executors",
+    label: "scale workers",
   },
   {
     id: "edge-executors-db",

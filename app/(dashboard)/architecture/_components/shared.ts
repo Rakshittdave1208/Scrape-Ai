@@ -36,6 +36,26 @@ export function formatCredits(value: number) {
   return new Intl.NumberFormat("en-US").format(value);
 }
 
+export function getArchitectureCategoryLabel(category: string) {
+  if (category === "infra") {
+    return "Cloud Infra";
+  }
+
+  if (category === "api") {
+    return "API";
+  }
+
+  if (category === "client") {
+    return "Client";
+  }
+
+  if (category === "service") {
+    return "Service";
+  }
+
+  return category;
+}
+
 type EdgePresentationOptions = {
   isActive?: boolean;
   isHovered?: boolean;

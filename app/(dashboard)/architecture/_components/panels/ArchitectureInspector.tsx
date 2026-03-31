@@ -12,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import type { ArchitectureCategory, ArchitectureEdge, ArchitectureNode } from "@/lib/workflow/backendArchitecture";
 import { cn } from "@/lib/utils";
+import { getArchitectureCategoryLabel } from "../shared";
 
 type ArchitectureInspectorProps = {
   className?: string;
@@ -91,7 +92,7 @@ export default function ArchitectureInspector({
               ) : null}
 
               <div className="flex items-center justify-between gap-3">
-                <Badge variant="outline">{selectedNode.data.category}</Badge>
+                <Badge variant="outline">{getArchitectureCategoryLabel(selectedNode.data.category)}</Badge>
                 <Button
                   type="button"
                   size="sm"
@@ -159,7 +160,7 @@ export default function ArchitectureInspector({
                   >
                     {categories.map((category) => (
                       <option key={category} value={category}>
-                        {category}
+                        {getArchitectureCategoryLabel(category)}
                       </option>
                     ))}
                   </select>

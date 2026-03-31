@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import type { ArchitectureTemplate } from "@/lib/defaultArchitecture";
 import { architectureTemplates } from "@/lib/workflow/backendArchitecture";
-import { architectureCategoryStyles, formatCredits } from "../shared";
+import { architectureCategoryStyles, formatCredits, getArchitectureCategoryLabel } from "../shared";
 
 const categoryMeta = {
   client: {
@@ -24,7 +24,7 @@ const categoryMeta = {
     icon: ServerCogIcon,
   },
   infra: {
-    title: "Infra",
+    title: "Cloud Infra",
     icon: DatabaseIcon,
   },
 } as const;
@@ -111,7 +111,9 @@ export default function ArchitectureSidebar({
                     <Icon size={14} />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">{categoryMeta[categoryKey].title}</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {getArchitectureCategoryLabel(categoryKey) || categoryMeta[categoryKey].title}
+                    </p>
                     <p className="text-xs text-muted-foreground">{categoryTemplates.length} templates</p>
                   </div>
                 </div>

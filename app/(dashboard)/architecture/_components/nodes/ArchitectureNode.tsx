@@ -7,7 +7,7 @@ import { ActivityIcon, CableIcon, GripHorizontalIcon, Settings2Icon } from "luci
 import { Input } from "@/components/ui/input";
 import type { ArchitectureNode } from "@/lib/workflow/backendArchitecture";
 import { cn } from "@/lib/utils";
-import { architectureCategoryStyles, architectureStatusStyles } from "../shared";
+import { architectureCategoryStyles, architectureStatusStyles, getArchitectureCategoryLabel } from "../shared";
 
 const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNode>) => {
   const { setNodes } = useReactFlow<ArchitectureNode>();
@@ -82,7 +82,7 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
                 styles.pill
               )}
             >
-              {String(data.category)}
+              {getArchitectureCategoryLabel(String(data.category))}
             </span>
             <span className={cn("rounded-full border px-2.5 py-1 text-[10px] font-semibold", status)}>
               {String(data.status)}
