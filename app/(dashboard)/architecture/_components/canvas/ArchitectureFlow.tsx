@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useMemo, type Dispatch, type DragEvent, type SetStateAction } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  type Dispatch,
+  type DragEvent,
+  type SetStateAction,
+} from "react";
 import {
   addEdge,
   Background,
@@ -13,6 +20,7 @@ import {
   Panel,
   ReactFlow,
   ReactFlowProvider,
+  useNodesInitialized,
   useReactFlow,
   type Connection,
   type OnEdgesChange,
@@ -37,6 +45,7 @@ const SNAP_GRID: [number, number] = [24, 24];
 type ArchitectureFlowInnerProps = {
   nodes: ArchitectureNode[];
   edges: ArchitectureEdge[];
+  autoFitKey: string;
   selectedNodeId: string | null;
   selectedEdgeId: string | null;
   hoveredEdgeId: string | null;
@@ -54,6 +63,7 @@ type ArchitectureFlowInnerProps = {
 function ArchitectureFlowInner({
   nodes,
   edges,
+  autoFitKey,
   selectedNodeId,
   selectedEdgeId,
   hoveredEdgeId,
@@ -68,6 +78,21 @@ function ArchitectureFlowInner({
   onSetEdges,
 }: ArchitectureFlowInnerProps) {
   const { fitView, screenToFlowPosition } = useReactFlow();
+  const nodesInitialized = useNodesInitialized();
+
+  useEffect(() => {
+    if (nodes.length === 0 || !nodesInitialized) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      void fitView({ padding: 0.28, duration: 350 });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [autoFitKey, fitView, nodes.length, nodesInitialized]);
 
   const onConnect = useCallback(
     (connection: Connection) => {
@@ -158,11 +183,13 @@ function ArchitectureFlowInner({
 
   return (
     <div
-      className="relative min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm xl:min-h-[860px]"
+      className="relative h-full min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm xl:min-h-[860px]"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
       <ReactFlow
+        className="h-full w-full"
+        style={{ width: "100%", height: "100%" }}
         nodes={nodes}
         edges={renderedEdges}
         nodeTypes={nodeTypes}

@@ -9,6 +9,7 @@ const CREDITS_STORAGE_KEY = "architecture-daily-credits";
 type StoredCreditState = {
   credits: number;
   lastReset: string;
+  limit?: number;
 };
 
 function getTodayKey() {
@@ -19,16 +20,18 @@ function getTodayKey() {
 function normalizeCreditsState(state?: Partial<StoredCreditState>): StoredCreditState {
   const todayKey = getTodayKey();
 
-  if (!state?.lastReset || state.lastReset !== todayKey) {
+  if (!state?.lastReset || state.lastReset !== todayKey || state.limit !== ARCHITECTURE_DAILY_CREDITS) {
     return {
       credits: ARCHITECTURE_DAILY_CREDITS,
       lastReset: todayKey,
+      limit: ARCHITECTURE_DAILY_CREDITS,
     };
   }
 
   return {
     credits: typeof state.credits === "number" ? state.credits : ARCHITECTURE_DAILY_CREDITS,
     lastReset: state.lastReset,
+    limit: ARCHITECTURE_DAILY_CREDITS,
   };
 }
 
@@ -37,6 +40,7 @@ export function useCredits() {
     normalizeCreditsState({
       credits: ARCHITECTURE_DAILY_CREDITS,
       lastReset: getTodayKey(),
+      limit: ARCHITECTURE_DAILY_CREDITS,
     })
   );
 

@@ -9,6 +9,7 @@ export type ArchitectureNodeData = {
   category: ArchitectureCategory;
   technology: string;
   input: string;
+  error?: string | null;
   config: Record<string, unknown>;
   cost: number;
   status: ArchitectureNodeStatus;
@@ -79,13 +80,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "client",
     type: "architectureNode",
-    position: { x: 760, y: 60 },
+    position: { x: 780, y: 80 },
     data: {
       label: "Client",
       description: "React Flow frontend for building, managing, and monitoring workflows.",
       category: "client",
       technology: "React Flow",
       input: "",
+      error: null,
       config: { framework: "React", ui: "React Flow" },
       cost: 100,
       status: "idle",
@@ -94,13 +96,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "api-gateway",
     type: "architectureNode",
-    position: { x: 760, y: 280 },
+    position: { x: 780, y: 290 },
     data: {
       label: "API Gateway",
       description: "Primary entry point for authenticated requests, routing, validation, and orchestration.",
       category: "api",
       technology: "HTTP Gateway",
       input: "",
+      error: null,
       config: { protocol: "HTTP", auth: "Clerk", transport: "REST" },
       cost: 120,
       status: "idle",
@@ -109,13 +112,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "auth-service",
     type: "architectureNode",
-    position: { x: 80, y: 560 },
+    position: { x: 120, y: 560 },
     data: {
       label: "Auth Service (Clerk)",
       description: "Handles user authentication, session verification, and identity resolution.",
       category: "service",
       technology: "Clerk",
       input: "",
+      error: null,
       config: { provider: "Clerk", tokens: "JWT" },
       cost: 90,
       status: "idle",
@@ -124,13 +128,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "workflow-service",
     type: "architectureNode",
-    position: { x: 480, y: 560 },
+    position: { x: 540, y: 560 },
     data: {
       label: "Workflow Service",
       description: "Manages workflow definitions, node graphs, versions, and persisted workflow state.",
       category: "service",
       technology: "Node.js Service",
       input: "",
+      error: null,
       config: { entity: "workflows", versioning: true },
       cost: 95,
       status: "idle",
@@ -139,13 +144,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "execution-engine",
     type: "architectureNode",
-    position: { x: 880, y: 560 },
+    position: { x: 960, y: 560 },
     data: {
       label: "Execution Engine",
       description: "Builds DAG execution plans, resolves dependencies, and coordinates workflow runs.",
       category: "service",
       technology: "DAG Runner",
       input: "",
+      error: null,
       config: { mode: "dag", retries: 3 },
       cost: 150,
       status: "idle",
@@ -154,13 +160,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "billing-service",
     type: "architectureNode",
-    position: { x: 1280, y: 560 },
+    position: { x: 1380, y: 560 },
     data: {
       label: "Billing Service",
       description: "Tracks plans, credit usage, limits, and subscription-aware execution permissions.",
       category: "service",
       technology: "Stripe Billing",
       input: "",
+      error: null,
       config: { credits: "daily", plans: ["FREE", "PRO"] },
       cost: 100,
       status: "idle",
@@ -169,13 +176,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "database",
     type: "architectureNode",
-    position: { x: 180, y: 900 },
+    position: { x: 120, y: 900 },
     data: {
       label: "Database (MongoDB)",
       description: "Stores workflows, credentials, execution logs, billing state, and usage records.",
       category: "infra",
       technology: "MongoDB",
       input: "",
+      error: null,
       config: { engine: "MongoDB", persistence: "primary" },
       cost: 130,
       status: "idle",
@@ -184,13 +192,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "queue-system",
     type: "architectureNode",
-    position: { x: 700, y: 900 },
+    position: { x: 540, y: 900 },
     data: {
       label: "Queue System (Redis/BullMQ)",
       description: "Queues workflow jobs, handles retries, scheduling, and worker distribution.",
       category: "infra",
       technology: "Redis / BullMQ",
       input: "",
+      error: null,
       config: { engine: "Redis", queue: "BullMQ" },
       cost: 120,
       status: "idle",
@@ -199,13 +208,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "node-executors",
     type: "architectureNode",
-    position: { x: 1120, y: 900 },
+    position: { x: 960, y: 900 },
     data: {
       label: "Node Executors",
       description: "Runs task workers for Scraper, API, and Transform nodes.",
       category: "service",
       technology: "Worker Pool",
       input: "",
+      error: null,
       config: { executors: ["scraper", "api", "transform"] },
       cost: 110,
       status: "idle",
@@ -214,13 +224,14 @@ export const backendNodes: ArchitectureNode[] = [
   {
     id: "stripe-webhook-handler",
     type: "architectureNode",
-    position: { x: 1520, y: 900 },
+    position: { x: 1380, y: 900 },
     data: {
       label: "Stripe Webhook Handler",
       description: "Processes Stripe subscription and payment events to update billing state.",
       category: "infra",
       technology: "Stripe Webhooks",
       input: "",
+      error: null,
       config: { provider: "Stripe", mode: "webhook" },
       cost: 80,
       status: "idle",
@@ -282,12 +293,6 @@ export const backendEdges: ArchitectureEdge[] = [
     source: "node-executors",
     target: "database",
     label: "store results",
-  },
-  {
-    id: "edge-billing-stripe",
-    source: "billing-service",
-    target: "stripe-webhook-handler",
-    label: "payment events",
   },
   {
     id: "edge-stripe-billing",

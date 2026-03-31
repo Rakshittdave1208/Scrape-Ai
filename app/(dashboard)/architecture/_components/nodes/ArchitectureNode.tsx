@@ -92,6 +92,12 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
 
         <p className="text-sm leading-6 text-current/80">{String(data.description)}</p>
 
+        {data.error ? (
+          <div className="rounded-2xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+            {data.error}
+          </div>
+        ) : null}
+
         <div className="grid grid-cols-3 gap-2 text-xs text-current/75">
           <div className="rounded-xl border border-current/15 bg-background/60 px-3 py-2">
             <div className="flex items-center gap-2 font-semibold text-current">

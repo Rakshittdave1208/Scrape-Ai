@@ -10,7 +10,7 @@ import {
 } from "@/lib/workflow/backendArchitecture";
 
 export const ARCHITECTURE_STORAGE_KEY = "architecture-canvas-state";
-export const ARCHITECTURE_DAILY_CREDITS = 10_000;
+export const ARCHITECTURE_DAILY_CREDITS = 100_000;
 
 export type ArchitectureTemplate = (typeof architectureTemplates)[number];
 
@@ -58,6 +58,7 @@ export function createArchitectureNodeFromTemplate(
       category: overrides?.category ?? template.category,
       technology: overrides?.technology ?? "",
       input: overrides?.input ?? "",
+      error: overrides?.error ?? null,
       config: overrides?.config ?? { ...template.config },
       cost: overrides?.cost ?? template.cost,
       status: overrides?.status ?? "idle",

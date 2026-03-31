@@ -19,12 +19,23 @@ import { useExecutionCredits } from "@/hooks/useExecutionCredits";
 import { createFlowNode } from "@/lib/workflow/createFlowNode";
 import { executeWorkflow } from "@/lib/workflow/executeWorkflow";
 import { getNodeExecutionCost, isConnectionValid } from "@/lib/workflow/graph";
+import { createSampleProductWorkflow } from "@/lib/workflow/sampleProductWorkflow";
 import type { AppNode } from "@/types/appNode";
-import type { TaskType } from "@/types/task";
+import { TaskType } from "@/types/task";
 
 const SAVE_DELAY_MS = 700;
 
 type ViewportState = { x: number; y: number; zoom: number };
+type WorkflowTemplateMode = "demo" | "blank" | "custom";
+
+function isStarterWorkflow(nodes: AppNode[], edges: Edge[]) {
+  if (nodes.length !== 1 || edges.length !== 0) {
+    return false;
+  }
+
+  const [firstNode] = nodes;
+  return firstNode.data.type === TaskType.LAUNCH_BROWSER;
+}
 
 export function useWorkflowCanvas({
   workflowId,
@@ -36,6 +47,7 @@ export function useWorkflowCanvas({
   const [nodes, setNodes, onNodesChangeBase] = useNodesState<AppNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [viewportState, setViewportState] = useState<ViewportState>({ x: 0, y: 0, zoom: 1 });
+  const [templateMode, setTemplateMode] = useState<WorkflowTemplateMode>("demo");
   const [executionLogs, setExecutionLogs] = useState<string[]>([]);
   const [executionError, setExecutionError] = useState<string | null>(null);
   const [contextNodeId, setContextNodeId] = useState<string | null>(null);
@@ -43,25 +55,41 @@ export function useWorkflowCanvas({
   const hasHydratedRef = useRef(false);
   const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { getViewport, setViewport, screenToFlowPosition, deleteElements } = useReactFlow();
-  const credits = useExecutionCredits(100);
+  const credits = useExecutionCredits(10_000);
 
   const storageKey = useMemo(() => `workflow-canvas:${workflowId}`, [workflowId]);
 
   useEffect(() => {
+    const sampleWorkflow = createSampleProductWorkflow();
+
     try {
       const parsed = JSON.parse(definition);
-      const nextNodes = Array.isArray(parsed.nodes) ? parsed.nodes : [];
-      const nextEdges = Array.isArray(parsed.edges) ? parsed.edges : [];
-      const nextViewport = parsed.viewport ?? { x: 0, y: 0, zoom: 1 };
+      const parsedNodes = Array.isArray(parsed.nodes) ? parsed.nodes : [];
+      const parsedEdges = Array.isArray(parsed.edges) ? parsed.edges : [];
+      const parsedTemplateMode =
+        parsed.meta?.template === "blank" || parsed.meta?.template === "custom"
+          ? parsed.meta.template
+          : "demo";
+      const shouldUseDemo =
+        parsedTemplateMode !== "blank" && (parsedNodes.length === 0 || isStarterWorkflow(parsedNodes, parsedEdges));
 
+      const nextNodes = shouldUseDemo ? sampleWorkflow.nodes : parsedNodes;
+      const nextEdges = shouldUseDemo ? sampleWorkflow.edges : parsedEdges;
+      const nextViewport = shouldUseDemo
+        ? sampleWorkflow.viewport
+        : parsed.viewport ?? { x: 0, y: 0, zoom: 1 };
+
+      setTemplateMode(shouldUseDemo ? "demo" : parsedTemplateMode);
       setNodes(nextNodes);
       setEdges(nextEdges);
       setViewport(nextViewport);
       setViewportState(nextViewport);
     } catch {
-      setNodes([]);
-      setEdges([]);
-      setViewportState({ x: 0, y: 0, zoom: 1 });
+      setTemplateMode("demo");
+      setNodes(sampleWorkflow.nodes);
+      setEdges(sampleWorkflow.edges);
+      setViewport(sampleWorkflow.viewport);
+      setViewportState(sampleWorkflow.viewport);
     } finally {
       hasHydratedRef.current = true;
     }
@@ -81,6 +109,14 @@ export function useWorkflowCanvas({
         nodes,
         edges,
         viewport: getViewport(),
+        meta: {
+          template:
+            templateMode === "blank" || (nodes.length === 0 && edges.length === 0)
+              ? "blank"
+              : templateMode === "demo"
+                ? "demo"
+                : "custom",
+        },
       });
 
       void updateWorkflow(workflowId, nextDefinition);
@@ -91,7 +127,7 @@ export function useWorkflowCanvas({
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [edges, getViewport, nodes, viewportState, workflowId]);
+  }, [edges, getViewport, nodes, templateMode, viewportState, workflowId]);
 
   const syncViewportState = useCallback(() => {
     setViewportState(getViewport());
@@ -138,6 +174,7 @@ export function useWorkflowCanvas({
 
   const addNode = useCallback(
     (taskType: TaskType, position: XYPosition) => {
+      setTemplateMode("custom");
       setNodes((currentNodes) => currentNodes.concat(createFlowNode(taskType, position)));
     },
     [setNodes]
@@ -167,10 +204,40 @@ export function useWorkflowCanvas({
       nodes,
       edges,
       viewport: getViewport(),
+      meta: {
+        template:
+          templateMode === "blank" || (nodes.length === 0 && edges.length === 0)
+            ? "blank"
+            : templateMode === "demo"
+              ? "demo"
+              : "custom",
+      },
     });
 
     localStorage.setItem(storageKey, snapshot);
-  }, [edges, getViewport, nodes, storageKey]);
+  }, [edges, getViewport, nodes, storageKey, templateMode]);
+
+  const loadDemoWorkflow = useCallback(() => {
+    const sampleWorkflow = createSampleProductWorkflow();
+    setTemplateMode("demo");
+    setNodes(sampleWorkflow.nodes);
+    setEdges(sampleWorkflow.edges);
+    setViewport(sampleWorkflow.viewport);
+    setViewportState(sampleWorkflow.viewport);
+    setExecutionError(null);
+    setExecutionLogs([]);
+  }, [setEdges, setNodes, setViewport]);
+
+  const clearCanvas = useCallback(() => {
+    const blankViewport = { x: 0, y: 0, zoom: 1 };
+    setTemplateMode("blank");
+    setNodes([]);
+    setEdges([]);
+    setViewport(blankViewport);
+    setViewportState(blankViewport);
+    setExecutionError(null);
+    setExecutionLogs([]);
+  }, [setEdges, setNodes, setViewport]);
 
   const loadFromLocalStorage = useCallback(() => {
     const stored = localStorage.getItem(storageKey);
@@ -182,6 +249,11 @@ export function useWorkflowCanvas({
 
     try {
       const parsed = JSON.parse(stored);
+      setTemplateMode(
+        parsed.meta?.template === "blank" || parsed.meta?.template === "custom"
+          ? parsed.meta.template
+          : "demo"
+      );
       setNodes(parsed.nodes ?? []);
       setEdges(parsed.edges ?? []);
       setViewport(parsed.viewport ?? { x: 0, y: 0, zoom: 1 });
@@ -192,6 +264,9 @@ export function useWorkflowCanvas({
   }, [setEdges, setNodes, setViewport, storageKey]);
 
   const resetNodeStatuses = useCallback(() => {
+    if (nodes.length > 0 || edges.length > 0) {
+      setTemplateMode("custom");
+    }
     setNodes((currentNodes) =>
       currentNodes.map((node) => ({
         ...node,
@@ -202,7 +277,7 @@ export function useWorkflowCanvas({
         },
       }))
     );
-  }, [setNodes]);
+  }, [edges.length, nodes.length, setNodes]);
 
   const runWorkflow = useCallback(() => {
     setExecutionError(null);
@@ -279,6 +354,8 @@ export function useWorkflowCanvas({
     syncViewportState,
     saveToLocalStorage,
     loadFromLocalStorage,
+    loadDemoWorkflow,
+    clearCanvas,
     runWorkflow,
     creditsRemaining: credits.remainingCredits,
     executionLogs,

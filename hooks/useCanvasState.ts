@@ -29,6 +29,7 @@ function normalizeNode(node: ArchitectureNode): ArchitectureNode {
       ...node.data,
       technology: node.data.technology ?? "",
       input: node.data.input ?? "",
+      error: node.data.error ?? null,
       config: node.data.config ?? {},
       cost: node.data.cost ?? 100,
       status: node.data.status ?? "idle",
@@ -43,12 +44,31 @@ function normalizeEdge(edge: ArchitectureEdge): ArchitectureEdge {
   };
 }
 
+function sanitizeEdges(edges: ArchitectureEdge[]) {
+  const hasLegacyBillingStripeLoop =
+    edges.some(
+      (edge) => edge.source === "billing-service" && edge.target === "stripe-webhook-handler"
+    ) &&
+    edges.some(
+      (edge) => edge.source === "stripe-webhook-handler" && edge.target === "billing-service"
+    );
+
+  if (!hasLegacyBillingStripeLoop) {
+    return edges;
+  }
+
+  return edges.filter(
+    (edge) => !(edge.source === "billing-service" && edge.target === "stripe-webhook-handler")
+  );
+}
+
 function normalizeGraph(graph?: Partial<GraphState>) {
   const fallback = createDefaultArchitectureGraph();
+  const normalizedEdges = sanitizeEdges((graph?.edges ?? fallback.edges).map(normalizeEdge));
 
   return {
     nodes: (graph?.nodes ?? fallback.nodes).map(normalizeNode),
-    edges: (graph?.edges ?? fallback.edges).map(normalizeEdge),
+    edges: normalizedEdges,
   };
 }
 
@@ -60,7 +80,13 @@ function readStoredGraph() {
   }
 
   try {
-    return normalizeGraph(JSON.parse(stored) as GraphState);
+    const normalized = normalizeGraph(JSON.parse(stored) as GraphState);
+
+    if (normalized.nodes.length === 0) {
+      return normalizeGraph();
+    }
+
+    return normalized;
   } catch {
     return null;
   }
@@ -189,6 +215,7 @@ export function useCanvasState() {
                 data: {
                   ...node.data,
                   ...updates,
+                  error: updates.error ?? node.data.error ?? null,
                   config: updates.config ?? node.data.config,
                 },
               }
@@ -253,6 +280,7 @@ export function useCanvasState() {
         data: {
           ...node.data,
           status: "idle",
+          error: null,
         },
       }))
     );

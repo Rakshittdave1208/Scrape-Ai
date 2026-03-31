@@ -1,181 +1,63 @@
-export const workflowNodes = [
-  {
-    id: "scraper-node",
-    type: "scraperNode",
-    position: { x: 80, y: 220 },
-    data: {
-      label: "Scrape Product Page",
-      inputs: [],
-      outputs: [
-        {
-          name: "rawHtml",
-          type: "string",
-        },
-      ],
-      config: {
-        url: "https://shop.example.com/products/wireless-headphones",
-        method: "GET",
-        headers: {
-          "user-agent": "Mozilla/5.0 (compatible; WorkflowBot/1.0)",
-          accept: "text/html,application/xhtml+xml",
-        },
-        timeoutMs: 15000,
-      },
-    },
-  },
-  {
-    id: "parser-node",
-    type: "transformNode",
-    position: { x: 420, y: 220 },
-    data: {
-      label: "Parse Product Data",
-      inputs: [
-        {
-          name: "rawHtml",
-          type: "string",
-        },
-      ],
-      outputs: [
-        {
-          name: "productData",
-          type: "json",
-        },
-      ],
-      config: {
-        selectors: {
-          title: "h1.product-title",
-          price: ".product-price",
-          currency: ".currency-symbol",
-          sku: "[data-sku]",
-          imageUrl: ".product-gallery img",
-          availability: ".stock-status",
-          rating: ".rating-value",
-        },
-        outputSchema: {
-          title: "string",
-          price: "string",
-          currency: "string",
-          sku: "string",
-          imageUrl: "string",
-          availability: "string",
-          rating: "string",
-        },
-      },
-    },
-  },
-  {
-    id: "transform-node",
-    type: "transformNode",
-    position: { x: 760, y: 220 },
-    data: {
-      label: "Normalize Product Payload",
-      inputs: [
-        {
-          name: "productData",
-          type: "json",
-        },
-      ],
-      outputs: [
-        {
-          name: "cleanedData",
-          type: "json",
-        },
-      ],
-      config: {
-        transformations: [
-          {
-            field: "price",
-            action: "parseFloat",
-          },
-          {
-            field: "currency",
-            action: "trim",
-          },
-          {
-            field: "title",
-            action: "trim",
-          },
-          {
-            field: "availability",
-            action: "toLowerCase",
-          },
-        ],
-        mapping: {
-          productTitle: "title",
-          unitPrice: "price",
-          currencyCode: "currency",
-          productSku: "sku",
-          image: "imageUrl",
-          inStock: "availability",
-          reviewRating: "rating",
-        },
-      },
-    },
-  },
-  {
-    id: "api-node",
-    type: "apiNode",
-    position: { x: 1100, y: 220 },
-    data: {
-      label: "Send Product To External API",
-      inputs: [
-        {
-          name: "cleanedData",
-          type: "json",
-        },
-      ],
-      outputs: [
-        {
-          name: "response",
-          type: "json",
-        },
-      ],
-      config: {
-        endpoint: "https://inventory-api.example.com/v1/products/import",
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-          authorization: "Bearer {{INVENTORY_API_TOKEN}}",
-        },
-        retry: {
-          attempts: 3,
-          backoffMs: 1000,
-        },
-      },
-    },
-  },
-] as const;
+import type { Edge } from "@xyflow/react";
 
-export const workflowEdges = [
-  {
-    id: "edge-scraper-parser",
-    source: "scraper-node",
-    target: "parser-node",
-    sourceHandle: "rawHtml",
-    targetHandle: "rawHtml",
-  },
-  {
-    id: "edge-parser-transform",
-    source: "parser-node",
-    target: "transform-node",
-    sourceHandle: "productData",
-    targetHandle: "productData",
-  },
-  {
-    id: "edge-transform-api",
-    source: "transform-node",
-    target: "api-node",
-    sourceHandle: "cleanedData",
-    targetHandle: "cleanedData",
-  },
-] as const;
+import { createFlowNode } from "@/lib/workflow/createFlowNode";
+import type { AppNode } from "@/types/appNode";
+import { TaskType } from "@/types/task";
 
-export const sampleProductWorkflowDefinition = JSON.stringify({
-  nodes: workflowNodes,
-  edges: workflowEdges,
-  viewport: {
-    x: 0,
-    y: 0,
-    zoom: 0.85,
-  },
-});
+function createSampleProductWorkflowNodes(): AppNode[] {
+  const launchBrowser = createFlowNode(TaskType.LAUNCH_BROWSER, { x: 80, y: 220 });
+  launchBrowser.data.inputs = {
+    "Website Url": "https://shop.example.com/products/wireless-headphones",
+  };
+
+  const pageToHtml = createFlowNode(TaskType.PAGE_TO_HTML, { x: 430, y: 220 });
+
+  const extractText = createFlowNode(TaskType.EXTRACT_TEXT_FROM_ELEMENT, { x: 800, y: 220 });
+  extractText.data.inputs = {
+    Selector: ".product-title",
+  };
+
+  return [launchBrowser, pageToHtml, extractText];
+}
+
+function createSampleProductWorkflowEdges(nodes: AppNode[]): Edge[] {
+  const [launchBrowser, pageToHtml, extractText] = nodes;
+
+  return [
+    {
+      id: `edge-${launchBrowser.id}-${pageToHtml.id}`,
+      source: launchBrowser.id,
+      target: pageToHtml.id,
+      sourceHandle: "Web page",
+      targetHandle: "Web page",
+      animated: true,
+    },
+    {
+      id: `edge-${pageToHtml.id}-${extractText.id}`,
+      source: pageToHtml.id,
+      target: extractText.id,
+      sourceHandle: "Html",
+      targetHandle: "Html",
+      animated: true,
+    },
+  ];
+}
+
+export function createSampleProductWorkflow() {
+  const nodes = createSampleProductWorkflowNodes();
+  const edges = createSampleProductWorkflowEdges(nodes);
+
+  return {
+    nodes,
+    edges,
+    viewport: {
+      x: 0,
+      y: 0,
+      zoom: 0.9,
+    },
+  };
+}
+
+export function createSampleProductWorkflowDefinition() {
+  return JSON.stringify(createSampleProductWorkflow());
+}

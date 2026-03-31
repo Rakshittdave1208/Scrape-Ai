@@ -11,8 +11,10 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import type { ArchitectureCategory, ArchitectureEdge, ArchitectureNode } from "@/lib/workflow/backendArchitecture";
+import { cn } from "@/lib/utils";
 
 type ArchitectureInspectorProps = {
+  className?: string;
   selectedNode: ArchitectureNode | null;
   selectedEdge: ArchitectureEdge | null;
   onUpdateNode: (nodeId: string, updates: Partial<ArchitectureNode["data"]>) => void;
@@ -25,6 +27,7 @@ type ArchitectureInspectorProps = {
 const categories: ArchitectureCategory[] = ["client", "api", "service", "infra"];
 
 export default function ArchitectureInspector({
+  className,
   selectedNode,
   selectedEdge,
   onUpdateNode,
@@ -60,7 +63,12 @@ export default function ArchitectureInspector({
   }, [selectedEdge, selectedNode]);
 
   return (
-    <aside className="flex min-h-0 min-w-0 w-full flex-col xl:w-[320px] xl:min-w-[320px] xl:max-w-[320px]">
+    <aside
+      className={cn(
+        "flex min-h-0 min-w-0 w-full flex-col xl:w-[296px] xl:min-w-[296px] xl:max-w-[296px] 2xl:w-[308px] 2xl:min-w-[308px] 2xl:max-w-[308px]",
+        className
+      )}
+    >
       <Card className="min-h-0 flex-1 gap-4 overflow-hidden py-5">
         <CardHeader className="gap-2 px-5">
           <CardTitle>{selectionTitle}</CardTitle>
@@ -76,6 +84,12 @@ export default function ArchitectureInspector({
         <CardContent className="min-h-0 overflow-y-auto px-5">
           {selectedNode ? (
             <div className="space-y-5">
+              {selectedNode.data.error ? (
+                <div className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                  {selectedNode.data.error}
+                </div>
+              ) : null}
+
               <div className="flex items-center justify-between gap-3">
                 <Badge variant="outline">{selectedNode.data.category}</Badge>
                 <Button

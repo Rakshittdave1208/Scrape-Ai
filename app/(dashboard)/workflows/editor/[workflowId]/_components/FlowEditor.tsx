@@ -2,7 +2,7 @@
 
 import "@xyflow/react/dist/style.css";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Background,
   BackgroundVariant,
@@ -10,8 +10,19 @@ import {
   MiniMap,
   Panel,
   ReactFlow,
+  useReactFlow,
 } from "@xyflow/react";
-import { AlertTriangleIcon, PlayIcon, RefreshCcwIcon, SaveIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import {
+  AlertTriangleIcon,
+  ExpandIcon,
+  Minimize2Icon,
+  PlayIcon,
+  RefreshCcwIcon,
+  SaveIcon,
+  SparklesIcon,
+  Trash2Icon,
+  UploadIcon,
+} from "lucide-react";
 
 import type { WorkflowForEditor } from "./Editor";
 import { nodeTypes } from "./canvas/nodeTypes";
@@ -20,11 +31,16 @@ import { WORKFLOW_SNAP_GRID } from "@/lib/workflow/graph";
 import { useWorkflowCanvas } from "@/hooks/useWorkflowCanvas";
 
 const fitViewOptions = { padding: 0.16 };
+const CANVAS_PAN_STEP = 120;
 
 export default function FlowEditor({
   workflow,
+  isFullscreen,
+  onToggleFullscreen,
 }: {
   workflow: WorkflowForEditor;
+  isFullscreen: boolean;
+  onToggleFullscreen: () => void | Promise<void>;
 }) {
   const {
     nodes,
@@ -37,6 +53,8 @@ export default function FlowEditor({
     syncViewportState,
     saveToLocalStorage,
     loadFromLocalStorage,
+    loadDemoWorkflow,
+    clearCanvas,
     runWorkflow,
     creditsRemaining,
     executionLogs,
@@ -50,14 +68,72 @@ export default function FlowEditor({
     workflowId: workflow.id,
     definition: workflow.definition,
   });
+  const { getViewport, setViewport } = useReactFlow();
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
   }, []);
 
+  useEffect(() => {
+    const isEditableTarget = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) {
+        return false;
+      }
+
+      const tag = target.tagName.toLowerCase();
+      return (
+        tag === "input" ||
+        tag === "textarea" ||
+        tag === "select" ||
+        target.isContentEditable
+      );
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isEditableTarget(event.target)) {
+        return;
+      }
+
+      let deltaX = 0;
+      let deltaY = 0;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          deltaX = CANVAS_PAN_STEP;
+          break;
+        case "ArrowRight":
+          deltaX = -CANVAS_PAN_STEP;
+          break;
+        case "ArrowUp":
+          deltaY = CANVAS_PAN_STEP;
+          break;
+        case "ArrowDown":
+          deltaY = -CANVAS_PAN_STEP;
+          break;
+        default:
+          return;
+      }
+
+      event.preventDefault();
+      const viewport = getViewport();
+      void setViewport(
+        {
+          x: viewport.x + deltaX,
+          y: viewport.y + deltaY,
+          zoom: viewport.zoom,
+        },
+        { duration: 120 }
+      );
+      syncViewportState();
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [getViewport, setViewport, syncViewportState]);
+
   return (
-    <main className="relative h-full min-h-0 flex-1" onClick={closeContextMenu}>
+    <main className="relative h-full min-h-0 flex-1 bg-background" onClick={closeContextMenu}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -95,29 +171,30 @@ export default function FlowEditor({
             <UploadIcon size={14} />
             Load Workflow
           </Button>
+          <Button type="button" size="sm" variant="outline" onClick={loadDemoWorkflow}>
+            <SparklesIcon size={14} />
+            Load Demo
+          </Button>
+          <Button type="button" size="sm" variant="outline" onClick={onToggleFullscreen}>
+            {isFullscreen ? <Minimize2Icon size={14} /> : <ExpandIcon size={14} />}
+            {isFullscreen ? "Exit Full Screen" : "Full Screen"}
+          </Button>
           <Button type="button" size="sm" onClick={runWorkflow}>
             <PlayIcon size={14} />
             Execute
           </Button>
-          <Button type="button" size="sm" variant="ghost" onClick={clearBrokenState}>
+          <Button type="button" size="sm" variant="ghost" onClick={clearCanvas}>
             <RefreshCcwIcon size={14} />
-            Reset
+            Clear Canvas
           </Button>
         </Panel>
 
         <Panel
-          position="top-center"
-          className="rounded-md border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
-        >
-          Drag node types from the sidebar, connect matching handles, save locally or to the workflow
-          definition, and run the graph when ready.
-        </Panel>
-
-        <Panel
           position="top-right"
-          className="rounded-md border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm backdrop-blur"
+          className="rounded-md border bg-background/95 px-3 py-2 text-xs shadow-sm backdrop-blur"
         >
-          Credits remaining: <span className="font-semibold text-foreground">{creditsRemaining}</span>
+          <span className="text-muted-foreground">Credits left:</span>{" "}
+          <span className="text-sm font-semibold text-foreground">{creditsRemaining}</span>
         </Panel>
 
         {(executionError || executionLogs.length > 0) && (

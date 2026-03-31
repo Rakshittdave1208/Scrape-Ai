@@ -30,6 +30,7 @@ const categoryMeta = {
 } as const;
 
 type ArchitectureSidebarProps = {
+  className?: string;
   credits: number;
   dailyLimit: number;
   progress: number;
@@ -40,6 +41,7 @@ type ArchitectureSidebarProps = {
 };
 
 export default function ArchitectureSidebar({
+  className,
   credits,
   dailyLimit,
   progress,
@@ -49,7 +51,12 @@ export default function ArchitectureSidebar({
   onAddTemplate,
 }: ArchitectureSidebarProps) {
   return (
-    <aside className="flex min-h-0 min-w-0 w-full flex-col gap-4 xl:w-[280px] xl:min-w-[280px] xl:max-w-[280px]">
+    <aside
+      className={cn(
+        "flex min-h-0 min-w-0 w-full flex-col gap-4 xl:w-[248px] xl:min-w-[248px] xl:max-w-[248px] 2xl:w-[260px] 2xl:min-w-[260px] 2xl:max-w-[260px]",
+        className
+      )}
+    >
       <Card className="gap-4 py-5">
         <CardHeader className="gap-3 px-5">
           <div className="flex items-center justify-between gap-3">
