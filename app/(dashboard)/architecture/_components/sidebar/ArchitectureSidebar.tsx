@@ -49,7 +49,7 @@ export default function ArchitectureSidebar({
   onAddTemplate,
 }: ArchitectureSidebarProps) {
   return (
-    <aside className="flex min-h-0 min-w-[280px] max-w-[280px] flex-col gap-4">
+    <aside className="flex min-h-0 min-w-0 w-full flex-col gap-4 xl:w-[280px] xl:min-w-[280px] xl:max-w-[280px]">
       <Card className="gap-4 py-5">
         <CardHeader className="gap-3 px-5">
           <div className="flex items-center justify-between gap-3">
@@ -75,7 +75,7 @@ export default function ArchitectureSidebar({
               <p>Edges</p>
             </div>
             <div className="col-span-2 rounded-xl border bg-background px-3 py-2">
-              <p className="font-semibold text-foreground">{selectedLabel ?? "Nothing selected"}</p>
+              <p className="truncate font-semibold text-foreground">{selectedLabel ?? "Nothing selected"}</p>
               <p>Current selection</p>
             </div>
           </div>

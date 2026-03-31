@@ -158,7 +158,7 @@ function ArchitectureFlowInner({
 
   return (
     <div
-      className="relative min-h-[860px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm"
+      className="relative min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm xl:min-h-[860px]"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -173,7 +173,7 @@ function ArchitectureFlowInner({
         onEdgeMouseEnter={(_, edge) => onSetHoveredEdge(edge.id)}
         onEdgeMouseLeave={() => onSetHoveredEdge(null)}
         fitView
-        fitViewOptions={{ padding: 0.2 }}
+        fitViewOptions={{ padding: 0.28 }}
         minZoom={0.4}
         maxZoom={1.5}
         nodesDraggable
@@ -209,7 +209,7 @@ function ArchitectureFlowInner({
           position="top-right"
           className="flex items-center gap-2 rounded-xl border bg-background/95 px-3 py-2 text-xs shadow-sm backdrop-blur"
         >
-          <Button type="button" size="sm" variant="outline" onClick={() => void fitView({ padding: 0.2, duration: 350 })}>
+          <Button type="button" size="sm" variant="outline" onClick={() => void fitView({ padding: 0.28, duration: 350 })}>
             <MoveIcon size={14} />
             Fit View
           </Button>

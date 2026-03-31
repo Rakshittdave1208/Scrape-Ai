@@ -1,273 +1,237 @@
-ScrapeFlow
+# ScrapeFlow
 
-ScrapeFlow is a visual workflow builder for web scraping automation. It allows users to design scraping pipelines using a node-based interface, manage credentials securely, and persist workflows for execution.
+ScrapeFlow is a node-based workflow builder for scraping and automation. It combines a visual React Flow editor, user-scoped credential management, architecture canvas templates, and an evolving billing system inside a Next.js dashboard.
 
-Unlike simple scraping tools, ScrapeFlow is built as a mini SaaS platform, combining a visual editor with backend systems for authentication, storage, and future execution pipelines.
+## Features
 
-✨ Key Features
-🧠 Visual Workflow Builder
+- Visual workflow editor for building scraping pipelines with nodes and edges
+- Registry-driven task system for adding new node types
+- Credential vault with masked secrets and per-user ownership
+- Architecture canvas with editable backend system templates
+- Clerk authentication for protected dashboard access
+- Prisma + SQLite persistence for local development
+- Billing foundation with Stripe checkout setup
 
-Drag-and-drop node editor powered by React Flow
+## Tech Stack
 
-Create complex scraping pipelines visually
+- Next.js 14 App Router
+- React 18
+- TypeScript
+- Tailwind CSS
+- shadcn/ui + Radix UI
+- `@xyflow/react`
+- Prisma 7
+- SQLite
+- Clerk
+- Stripe
 
-Connect node outputs → inputs dynamically
+## Project Structure
 
-Extendable node system via task registry
+```text
+scrape-flow/
+├─ app/
+│  ├─ (auth)/
+│  ├─ (dashboard)/
+│  │  ├─ (home)/
+│  │  ├─ architecture/
+│  │  ├─ billing/
+│  │  ├─ credentials/
+│  │  └─ workflows/
+│  ├─ api/
+│  ├─ globals.css
+│  └─ layout.tsx
+├─ actions/
+│  ├─ billing/
+│  ├─ credentials/
+│  └─ workflows/
+├─ components/
+│  ├─ providers/
+│  ├─ ui/
+│  └─ uiii/
+├─ hooks/
+│  ├─ useCanvasState.ts
+│  ├─ useCredits.ts
+│  └─ useWorkflowCanvas.ts
+├─ lib/
+│  ├─ billing/
+│  ├─ generated/
+│  ├─ helper/
+│  ├─ workflow/
+│  ├─ defaultArchitecture.ts
+│  ├─ prisma.ts
+│  └─ stripe.ts
+├─ prisma/
+│  ├─ migrations/
+│  ├─ schema.prisma
+│  └─ dev.db
+├─ public/
+├─ schema/
+│  ├─ credentials.ts
+│  └─ workflow.ts
+├─ types/
+│  ├─ appNode.ts
+│  ├─ task.ts
+│  └─ workflow.ts
+├─ middleware.ts
+├─ package.json
+├─ prisma.config.ts
+└─ tailwind.config.ts
+```
 
-🔐 Secure Credential Management
+## Important Areas
 
-Store API keys, cookies, headers, and login credentials
+### `app/(dashboard)/workflows`
 
-Secrets are masked in UI
+Contains the workflow listing page and the workflow editor route. This is the main product area for creating and editing automation flows.
 
-Credentials scoped per user
+### `app/(dashboard)/credentials`
 
-Prevents raw secret exposure in workflows
+Contains the credentials management UI for creating, editing, and deleting user-owned secrets and connection values.
 
-💾 Workflow Persistence
+### `app/(dashboard)/architecture`
 
-Save workflows to database
+Contains the editable backend architecture canvas with a node palette, inspector panel, and local persistence.
 
-Reload and edit existing flows
+### `actions/`
 
-Graph structure stored as JSON
+Server Actions for workflow CRUD, credential CRUD, and billing-related operations.
 
-👤 Authentication System
+### `lib/workflow/`
 
-Clerk-based authentication
+Core workflow logic such as task registry definitions, sample flows, node creation, and graph helpers.
 
-User-specific workflows and credentials
+### `schema/`
 
-Access control on all resources
+Zod validation schemas for workflows and credentials.
 
-🧩 Registry-Based Node System
+### `prisma/`
 
-Each node is defined via metadata:
+Database schema, migrations, and local SQLite database for development.
 
-label
+## Clone and Run Locally
 
-icon
+### 1. Clone the repository
 
-inputs
+```bash
+git clone https://github.com/Rakshittdave1208/Scrape-Ai.git
+cd Scrape-Ai/scrape-flow
+```
 
-outputs
+### 2. Install dependencies
 
-Dynamic rendering of nodes
-
-Easy to extend with new scraping tasks
-
-🏗️ Architecture Overview
-
-ScrapeFlow follows a modular SaaS architecture:
-
-Frontend (Next.js + React Flow)
-        ↓
-API Layer (Next.js Server Actions / Routes)
-        ↓
-Database (Prisma + SQLite)
-        ↓
-Auth Layer (Clerk)
-Core Modules
-
-Workflow Engine (UI) → Node editor & graph builder
-
-Credential Manager → Secure storage of secrets
-
-Task Registry → Defines node types
-
-Persistence Layer → Saves workflows & credentials
-
-Auth Layer → User isolation & protection
-
-🛠️ Tech Stack
-Frontend
-
-Next.js 14 (App Router)
-
-React 18
-
-TypeScript
-
-Tailwind CSS
-
-Radix UI / shadcn components
-
-React Hook Form
-
-Zod (validation)
-
-@xyflow/react (React Flow)
-
-Backend
-
-Next.js API / Server Actions
-
-Prisma ORM
-
-SQLite (dev database)
-
-Authentication
-
-Clerk
-
-📂 Project Structure (Simplified)
-/app
-  /dashboard
-  /workflows
-  /credentials
-
-/components
-  /ui
-  /workflow-editor
-  /nodes
-
-/lib
-  /prisma
-  /auth
-  /validators
-
-/registry
-  taskRegistry.ts
-
-/prisma
-  schema.prisma
-⚙️ Getting Started
-1. Clone the Repository
-git clone https://github.com/your-username/scrapeflow.git
-cd scrapeflow
-2. Install Dependencies
+```bash
 npm install
-3. Setup Environment Variables
+```
 
-Create a .env file:
+### 3. Create environment variables
 
+Create a `.env.local` file in `scrape-flow/` with the following values:
+
+```env
 DATABASE_URL="file:./dev.db"
 
-# Clerk (example)
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_key
-CLERK_SECRET_KEY=your_secret
-4. Setup Database
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_clerk_publishable_key"
+CLERK_SECRET_KEY="your_clerk_secret_key"
+
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
+
+STRIPE_SECRET_KEY="your_stripe_secret_key"
+STRIPE_PRO_PRICE_ID="your_stripe_price_id"
+```
+
+Notes:
+
+- `DATABASE_URL` is required for Prisma and local SQLite.
+- Clerk keys are required to access authenticated dashboard routes.
+- Stripe values are only needed for billing checkout features.
+
+### 4. Run Prisma migrations
+
+```bash
 npx prisma migrate dev
-5. Run the App
+```
+
+### 5. Generate the Prisma client
+
+```bash
+npx prisma generate
+```
+
+### 6. Start the development server
+
+```bash
 npm run dev
+```
 
 Open:
 
-👉 http://localhost:3000
+```text
+http://localhost:3000
+```
 
-🔐 Credential Handling Design
+## Available Scripts
 
-ScrapeFlow follows strict rules for handling sensitive data:
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-❌ Raw secrets are never stored in workflow JSON
+## Local Development Notes
 
-✅ Credentials are stored separately and referenced via credentialId
+- The app uses SQLite for local development.
+- Workflow and architecture canvas state are also persisted in local storage for some UI experiences.
+- Credentials are scoped by `userId` and shown in masked form in the UI.
+- Billing is partially integrated and expects Stripe configuration for checkout.
 
-🔒 Values are masked in UI (••••••)
+## Current Product Areas
 
-👤 Scoped per user for isolation
+### Workflow Builder
 
-🧩 Node System Design
+- Add nodes from a task menu
+- Connect nodes on a React Flow canvas
+- Save workflow definitions as JSON
+- Edit node inputs and graph structure
 
-Each node is defined via a task registry:
+### Credentials
 
-{
-  type: "HTTP_REQUEST",
-  label: "HTTP Request",
-  icon: "Globe",
-  inputs: [...],
-  outputs: [...]
-}
-Benefits:
+- Create structured credentials
+- Edit or delete existing credentials
+- Hide raw secret values in list views
 
-Plug-and-play extensibility
+### Architecture Canvas
 
-No hardcoding UI for nodes
+- Start from a default backend architecture template
+- Drag in new nodes from a sidebar
+- Edit node labels, descriptions, technology, and config
+- Save, reset, clear, and simulate the canvas
 
-Easy to add new scraping steps
+### Billing
 
-🚧 Current Limitations
+- Free and Pro plan configuration
+- Stripe checkout session creation
+- Credits-oriented product direction
 
-No execution engine yet
+## Security Notes
 
-No real-time scraping
+- Credentials are user-scoped.
+- Raw secret values should not be embedded directly into workflow JSON.
+- Sensitive values are masked in the UI.
+- Update and delete flows should always validate ownership server-side.
 
-SQLite (not production-ready)
+## Roadmap
 
-No background job processing
+- Workflow execution engine
+- Credential injection into runtime nodes
+- Queue workers for async execution
+- Run history and execution logs
+- Better billing state synchronization with Stripe webhooks
 
-Limited node types
+## Repository
 
-🛣️ Roadmap
-🔥 Phase 1 (In Progress)
+GitHub:
 
-Workflow execution engine
-
-Credential injection into nodes
-
-Node runtime system
-
-⚙️ Phase 2
-
-Background job queue (BullMQ / Redis)
-
-Execution logs & debugging
-
-Retry & failure handling
-
-💰 Phase 3
-
-Usage tracking
-
-Billing system (credits/subscription)
-
-Rate limits
-
-📊 Phase 4
-
-Analytics dashboard
-
-Workflow performance insights
-
-💡 Future Vision
-
-ScrapeFlow aims to become:
-
-A Zapier-like automation platform for web scraping
-
-Where users can:
-
-Automate data extraction
-
-Chain scraping workflows
-
-Integrate with APIs and databases
-
-Run workflows at scale
-
-🤝 Contributing
-
-Contributions are welcome!
-
-Fork the repo
-
-Create a feature branch
-
-Commit your changes
-
-Open a pull request
-
-📜 License
-
-MIT License
-
-👨‍💻 Author
-
-Rakshit Dave
-
-MERN Stack Developer
-
-Building scalable SaaS products
-
-Interested in automation, AI, and system design
+```text
+https://github.com/Rakshittdave1208/Scrape-Ai
+```

@@ -60,7 +60,7 @@ export default function ArchitectureInspector({
   }, [selectedEdge, selectedNode]);
 
   return (
-    <aside className="flex min-h-0 min-w-[320px] max-w-[320px] flex-col">
+    <aside className="flex min-h-0 min-w-0 w-full flex-col xl:w-[320px] xl:min-w-[320px] xl:max-w-[320px]">
       <Card className="min-h-0 flex-1 gap-4 overflow-hidden py-5">
         <CardHeader className="gap-2 px-5">
           <CardTitle>{selectionTitle}</CardTitle>
@@ -107,6 +107,28 @@ export default function ArchitectureInspector({
                   onChange={(event) =>
                     onUpdateNode(selectedNode.id, { description: event.target.value })
                   }
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="architecture-node-technology">Technology</Label>
+                <Input
+                  id="architecture-node-technology"
+                  value={selectedNode.data.technology ?? ""}
+                  onChange={(event) =>
+                    onUpdateNode(selectedNode.id, { technology: event.target.value })
+                  }
+                  placeholder="MongoDB, PostgreSQL, Redis, Clerk..."
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="architecture-node-input">Inline Node Input</Label>
+                <Input
+                  id="architecture-node-input"
+                  value={selectedNode.data.input ?? ""}
+                  onChange={(event) => onUpdateNode(selectedNode.id, { input: event.target.value })}
+                  placeholder="Type the string shown directly on the node"
                 />
               </div>
 

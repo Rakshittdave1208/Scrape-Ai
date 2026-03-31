@@ -27,6 +27,8 @@ function normalizeNode(node: ArchitectureNode): ArchitectureNode {
     type: "architectureNode",
     data: {
       ...node.data,
+      technology: node.data.technology ?? "",
+      input: node.data.input ?? "",
       config: node.data.config ?? {},
       cost: node.data.cost ?? 100,
       status: node.data.status ?? "idle",
@@ -143,6 +145,19 @@ export function useCanvasState() {
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
     localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify(defaultGraph));
+  }, [setEdges, setNodes]);
+
+  const clearGraph = useCallback(() => {
+    const emptyGraph = {
+      nodes: [] as ArchitectureNode[],
+      edges: [] as ArchitectureEdge[],
+    };
+
+    setNodes(emptyGraph.nodes);
+    setEdges(emptyGraph.edges);
+    setSelectedNodeId(null);
+    setSelectedEdgeId(null);
+    localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify(emptyGraph));
   }, [setEdges, setNodes]);
 
   const addNodeFromTemplate = useCallback(
@@ -267,6 +282,7 @@ export function useCanvasState() {
     saveGraph,
     loadGraph,
     resetGraph,
+    clearGraph,
     addNodeFromTemplate,
     addNodeAtDefaultPosition,
     updateNodeData,

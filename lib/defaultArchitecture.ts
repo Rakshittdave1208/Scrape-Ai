@@ -56,6 +56,8 @@ export function createArchitectureNodeFromTemplate(
       label: overrides?.label ?? template.label,
       description: overrides?.description ?? template.description,
       category: overrides?.category ?? template.category,
+      technology: overrides?.technology ?? "",
+      input: overrides?.input ?? "",
       config: overrides?.config ?? { ...template.config },
       cost: overrides?.cost ?? template.cost,
       status: overrides?.status ?? "idle",

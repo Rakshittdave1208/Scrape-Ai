@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { DownloadIcon, PlayIcon, RefreshCcwIcon, SaveIcon } from "lucide-react";
+import { DownloadIcon, EraserIcon, PlayIcon, RefreshCcwIcon, SaveIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -82,6 +82,7 @@ export default function ArchitectureCanvas() {
     saveGraph,
     loadGraph,
     resetGraph,
+    clearGraph,
     addNodeFromTemplate,
     addNodeAtDefaultPosition,
     updateNodeData,
@@ -214,7 +215,7 @@ export default function ArchitectureCanvas() {
   }, [deleteEdge, deleteNode, selectedEdgeId, selectedNodeId]);
 
   return (
-    <div className="grid min-h-0 flex-1 gap-4 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
+    <div className="grid min-h-0 flex-1 items-start gap-4 xl:grid-cols-[280px_minmax(0,1fr)_320px] xl:items-stretch">
       <ArchitectureSidebar
         credits={credits}
         dailyLimit={dailyLimit}
@@ -226,14 +227,14 @@ export default function ArchitectureCanvas() {
       />
 
       <div className="flex min-h-0 min-w-0 flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background px-4 py-3 shadow-sm">
-          <div className="space-y-1">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background px-4 py-3 shadow-sm">
+          <div className="min-w-0 space-y-1">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">Default template loaded</Badge>
               <Badge variant="outline">{nodes.length} nodes</Badge>
               <Badge variant="outline">{edges.length} edges</Badge>
             </div>
-            <p className="text-sm text-muted-foreground">{runMessage}</p>
+            <p className="max-w-3xl text-sm text-muted-foreground">{runMessage}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -248,6 +249,10 @@ export default function ArchitectureCanvas() {
             <Button type="button" size="sm" variant="outline" onClick={resetGraph}>
               <RefreshCcwIcon size={14} />
               Reset Canvas
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={clearGraph}>
+              <EraserIcon size={14} />
+              Clear Canvas
             </Button>
             <Button type="button" size="sm" onClick={() => void runArchitecture()} disabled={isRunning}>
               <PlayIcon size={14} />

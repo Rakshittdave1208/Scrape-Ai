@@ -3,8 +3,8 @@ import ArchitectureCanvas from "./_components/ArchitectureCanvas";
 
 export default function ArchitecturePage() {
   return (
-    <div className="flex h-full min-h-0 flex-1 flex-col gap-6">
-      <section className="space-y-2">
+    <div className="flex h-full min-h-0 flex-1 flex-col gap-6 overflow-hidden">
+      <section className="min-w-0 space-y-2">
         <Badge variant="outline" className="w-fit">
           System Design
         </Badge>
