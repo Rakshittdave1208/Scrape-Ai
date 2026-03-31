@@ -57,11 +57,11 @@ export default function ArchitectureSidebar({
         className
       )}
     >
-      <Card className="gap-4 py-5">
+      <Card className="gap-4 border-white/70 bg-background/92 py-5 shadow-lg backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/88">
         <CardHeader className="gap-3 px-5">
           <div className="flex items-center justify-between gap-3">
             <Badge variant="outline">Daily Credits</Badge>
-            <span className="text-xs font-medium text-muted-foreground">10,000 / day</span>
+            <span className="text-xs font-medium text-muted-foreground">{formatCredits(dailyLimit)} / day</span>
           </div>
           <div>
             <CardTitle className="text-2xl">{formatCredits(credits)}</CardTitle>
@@ -73,15 +73,15 @@ export default function ArchitectureSidebar({
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${progress}%` }} />
           </div>
           <div className="grid grid-cols-2 gap-3 text-xs text-muted-foreground">
-            <div className="rounded-xl border bg-background px-3 py-2">
+            <div className="rounded-xl border bg-background/80 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80">
               <p className="font-semibold text-foreground">{nodesCount}</p>
               <p>Nodes</p>
             </div>
-            <div className="rounded-xl border bg-background px-3 py-2">
+            <div className="rounded-xl border bg-background/80 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80">
               <p className="font-semibold text-foreground">{edgesCount}</p>
               <p>Edges</p>
             </div>
-            <div className="col-span-2 rounded-xl border bg-background px-3 py-2">
+            <div className="col-span-2 rounded-xl border bg-background/80 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80">
               <p className="truncate font-semibold text-foreground">{selectedLabel ?? "Nothing selected"}</p>
               <p>Current selection</p>
             </div>
@@ -92,7 +92,7 @@ export default function ArchitectureSidebar({
         </CardContent>
       </Card>
 
-      <Card className="min-h-0 flex-1 gap-4 overflow-hidden py-5">
+      <Card className="min-h-0 flex-1 gap-4 overflow-hidden border-white/70 bg-background/92 py-5 shadow-lg backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/88">
         <CardHeader className="gap-2 px-5">
           <CardTitle>Node Palette</CardTitle>
           <CardDescription>Drag a module into the canvas or click to add it quickly.</CardDescription>

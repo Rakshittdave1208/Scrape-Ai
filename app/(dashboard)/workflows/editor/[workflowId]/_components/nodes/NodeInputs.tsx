@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function NodeInputs({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col divide-y gap-2">{children}</div>;
+  return <div className="flex flex-col divide-y divide-slate-200/80 gap-2 dark:divide-slate-800/80">{children}</div>;
 }
 
 export function NodeInput({
@@ -35,7 +35,7 @@ export function NodeInput({
         : "Editable";
 
   return (
-    <div className="relative flex w-full justify-start bg-secondary p-3">
+    <div className="relative flex w-full justify-start bg-gradient-to-r from-slate-50 via-white to-slate-50 p-3 dark:from-slate-950/80 dark:via-slate-900/80 dark:to-slate-950/80">
       <div className="flex w-full flex-col gap-2">
         <div className="flex items-center justify-between">
           <Tooltip>

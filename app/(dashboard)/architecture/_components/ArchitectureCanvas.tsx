@@ -355,7 +355,7 @@ export default function ArchitectureCanvas() {
         isFullscreen && "h-screen bg-background p-4"
       )}
     >
-      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background px-4 py-3 shadow-sm">
+      <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background/92 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/88">
         <div className="min-w-0 space-y-1">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="outline">Default template loaded</Badge>

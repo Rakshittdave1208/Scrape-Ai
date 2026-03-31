@@ -1,4 +1,4 @@
-import { CheckIcon, CreditCardIcon, SparklesIcon, WorkflowIcon } from "lucide-react";
+import { CheckIcon, CpuIcon, SparklesIcon, WaypointsIcon, WorkflowIcon } from "lucide-react";
 
 import CheckoutButton from "./_components/CheckoutButton";
 import { Badge } from "@/components/ui/badge";
@@ -8,13 +8,13 @@ import { PLANS } from "@/lib/billing/plans";
 const planCards = [
   {
     ...PLANS.FREE,
-    description: "Start building and testing your scraping workflows.",
+    description: "Start building workflows and experimenting with the architecture canvas.",
     cta: "Current starter plan",
     featured: false,
   },
   {
     ...PLANS.PRO,
-    description: "Unlock more workflows and a much larger monthly credit allowance.",
+    description: "Unlock larger workflow runs and a bigger architecture simulation budget.",
     cta: "Upgrade to Pro",
     featured: true,
   },
@@ -31,8 +31,9 @@ export default function BillingPage() {
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight">Billing & Plans</h1>
         <p className="max-w-3xl text-muted-foreground">
-          ScrapeFlow uses a simple two-tier pricing model. Start on the Free plan, then upgrade to Pro
-          when you need more credits and more workflow capacity.
+          ScrapeFlow plans are now aligned with the two core experiences in the product: workflow
+          execution and architecture design. Start on Free, then upgrade when you need more workflow
+          capacity and larger simulation budgets.
         </p>
       </section>
 
@@ -70,13 +71,13 @@ export default function BillingPage() {
             </CardHeader>
 
             <CardContent className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 xl:grid-cols-3">
                 <div className="rounded-lg border bg-secondary/30 p-4">
                   <div className="mb-2 flex items-center gap-2 text-muted-foreground">
-                    <CreditCardIcon size={16} />
-                    <span className="text-sm font-medium">Credits</span>
+                    <CpuIcon size={16} />
+                    <span className="text-sm font-medium">Workflow Credits</span>
                   </div>
-                  <p className="text-2xl font-bold">{plan.credits}</p>
+                  <p className="text-2xl font-bold">{plan.workflowCredits.toLocaleString()}</p>
                 </div>
 
                 <div className="rounded-lg border bg-secondary/30 p-4">
@@ -86,12 +87,24 @@ export default function BillingPage() {
                   </div>
                   <p className="text-2xl font-bold">{plan.workflows}</p>
                 </div>
+
+                <div className="rounded-lg border bg-secondary/30 p-4">
+                  <div className="mb-2 flex items-center gap-2 text-muted-foreground">
+                    <WaypointsIcon size={16} />
+                    <span className="text-sm font-medium">Architecture Credits</span>
+                  </div>
+                  <p className="text-2xl font-bold">{plan.architectureCredits.toLocaleString()}</p>
+                </div>
               </div>
 
               <div className="space-y-2 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <CheckIcon size={14} className="text-primary" />
-                  Monthly credit allowance
+                  Workflow execution credits
+                </div>
+                <div className="flex items-center gap-2">
+                  <CheckIcon size={14} className="text-primary" />
+                  Architecture simulation credits
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckIcon size={14} className="text-primary" />

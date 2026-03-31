@@ -14,7 +14,7 @@ function BrowserInstanceParam({
   readOnly?: boolean;
 }) {
   return (
-    <div className="nodrag w-full rounded-md border border-dashed border-border/80 bg-muted/20 p-3">
+    <div className="nodrag w-full rounded-md border border-dashed border-slate-200/80 bg-slate-50/90 p-3 dark:border-slate-800/80 dark:bg-slate-950/75">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <GlobeIcon size={14} className="text-amber-500" />

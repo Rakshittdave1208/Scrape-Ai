@@ -69,7 +69,7 @@ export default function ArchitectureInspector({
         className
       )}
     >
-      <Card className="min-h-0 flex-1 gap-4 overflow-hidden py-5">
+      <Card className="min-h-0 flex-1 gap-4 overflow-hidden border-white/70 bg-background/92 py-5 shadow-lg backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/88">
         <CardHeader className="gap-2 px-5">
           <CardTitle>{selectionTitle}</CardTitle>
           <CardDescription>
@@ -85,7 +85,7 @@ export default function ArchitectureInspector({
           {selectedNode ? (
             <div className="space-y-5">
               {selectedNode.data.error ? (
-                <div className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                <div className="rounded-2xl border border-rose-300 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/60 dark:text-rose-200">
                   {selectedNode.data.error}
                 </div>
               ) : null}
@@ -226,7 +226,7 @@ export default function ArchitectureInspector({
                 </Button>
               </div>
 
-              <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+                <div className="rounded-2xl border bg-muted/30 px-4 py-3 text-sm text-muted-foreground dark:border-slate-800 dark:bg-slate-900/70">
                 <p>
                   <span className="font-semibold text-foreground">{selectedEdge.source}</span>
                   {" -> "}
@@ -246,7 +246,7 @@ export default function ArchitectureInspector({
           ) : null}
 
           {!selectedNode && !selectedEdge ? (
-            <div className="flex h-full min-h-[360px] items-center justify-center rounded-2xl border border-dashed bg-muted/20 px-6 text-center">
+            <div className="flex h-full min-h-[360px] items-center justify-center rounded-2xl border border-dashed bg-muted/20 px-6 text-center dark:border-slate-800 dark:bg-slate-900/50">
               <div className="space-y-2">
                 <p className="font-semibold text-foreground">Nothing selected</p>
                 <p className="text-sm text-muted-foreground">

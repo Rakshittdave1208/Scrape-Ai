@@ -18,9 +18,9 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
   return (
     <div
       className={cn(
-        "relative w-[300px] rounded-2xl border-2 px-5 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.08)] transition-all sm:w-[320px]",
+        "relative w-[300px] rounded-2xl border-2 px-5 py-4 shadow-[0_14px_34px_rgba(15,23,42,0.08)] ring-1 ring-white/60 transition-all dark:shadow-[0_20px_50px_rgba(0,0,0,0.45)] dark:ring-slate-800/80 sm:w-[320px]",
         styles.card,
-        selected && "ring-4 ring-primary/15"
+        selected && "ring-4 ring-primary/20 dark:ring-primary/30"
       )}
     >
       <Handle
@@ -55,7 +55,7 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
             <Input
               value={data.technology ?? ""}
               placeholder="Type database or service technology"
-              className="nodrag h-8 border-current/15 bg-background/90 text-xs font-medium text-foreground placeholder:text-muted-foreground"
+              className="nodrag h-8 border-current/15 bg-white/85 text-xs font-medium text-foreground placeholder:text-muted-foreground dark:bg-slate-900/85"
               onChange={(event) => {
                 const nextValue = event.target.value;
                 setNodes((currentNodes) =>
@@ -90,30 +90,30 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
           </div>
         </div>
 
-        <p className="text-sm leading-6 text-current/80">{String(data.description)}</p>
+        <p className="text-sm leading-6 text-current/80 dark:text-current/85">{String(data.description)}</p>
 
         {data.error ? (
-          <div className="rounded-2xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+          <div className="rounded-2xl border border-rose-300 bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/60 dark:text-rose-200">
             {data.error}
           </div>
         ) : null}
 
         <div className="grid grid-cols-3 gap-2 text-xs text-current/75">
-          <div className="rounded-xl border border-current/15 bg-background/60 px-3 py-2">
+          <div className="rounded-xl border border-current/15 bg-white/70 px-3 py-2 dark:bg-slate-900/70">
             <div className="flex items-center gap-2 font-semibold text-current">
               <ActivityIcon size={13} />
               {data.cost} cr
             </div>
             <p className="mt-1 text-[11px]">run cost</p>
           </div>
-          <div className="rounded-xl border border-current/15 bg-background/60 px-3 py-2">
+          <div className="rounded-xl border border-current/15 bg-white/70 px-3 py-2 dark:bg-slate-900/70">
             <div className="flex items-center gap-2 font-semibold text-current">
               <Settings2Icon size={13} />
               {Object.keys(data.config ?? {}).length}
             </div>
             <p className="mt-1 text-[11px]">config keys</p>
           </div>
-          <div className="rounded-xl border border-current/15 bg-background/60 px-3 py-2">
+          <div className="rounded-xl border border-current/15 bg-white/70 px-3 py-2 dark:bg-slate-900/70">
             <div className="flex items-center gap-2 font-semibold text-current">
               <CableIcon size={13} />
               Ready
@@ -122,12 +122,12 @@ const ArchitectureNode = memo(({ id, data, selected }: NodeProps<ArchitectureNod
           </div>
         </div>
 
-        <div className="space-y-2 rounded-2xl border border-current/15 bg-background/70 px-3 py-3">
+        <div className="space-y-2 rounded-2xl border border-current/15 bg-white/75 px-3 py-3 dark:bg-slate-900/75">
           <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-current/65">Node Input</p>
           <Input
             value={data.input ?? ""}
             placeholder="Type architecture details here"
-            className="nodrag border-current/15 bg-background/90 text-sm text-foreground placeholder:text-muted-foreground"
+            className="nodrag border-current/15 bg-white/90 text-sm text-foreground placeholder:text-muted-foreground dark:bg-slate-950/85"
             onChange={(event) => {
               const nextValue = event.target.value;
               setNodes((currentNodes) =>

@@ -55,10 +55,10 @@ function StringParam({
     <div
       className={`nodrag w-full rounded-md border p-3 transition-colors ${
         disabled
-          ? "border-border/60 bg-muted/30"
+          ? "border-slate-200/80 bg-slate-100/80 dark:border-slate-800/80 dark:bg-slate-900/70"
           : isFocused
-            ? "border-primary bg-primary/5"
-            : "border-border/80 bg-background/80"
+            ? "border-primary bg-primary/5 dark:bg-primary/10"
+            : "border-slate-200/80 bg-white/90 dark:border-slate-800/80 dark:bg-slate-950/85"
       }`}
     >
       <div className="mb-3 flex items-center justify-between gap-2">

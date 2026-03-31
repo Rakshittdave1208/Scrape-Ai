@@ -153,29 +153,38 @@ function ArchitectureFlowInner({
           ...edge,
           type: "smoothstep",
           animated: presentation.animated,
+          pathOptions: {
+            borderRadius: 18,
+            offset: 18,
+          },
           markerEnd: {
             type: MarkerType.ArrowClosed,
-            width: 18,
-            height: 18,
+            width: 26,
+            height: 26,
             color: presentation.stroke,
           },
           style: {
             strokeWidth: presentation.strokeWidth,
             stroke: presentation.stroke,
+            strokeDasharray: presentation.dashArray,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            filter: presentation.dropShadow,
           },
           labelStyle: {
             fill: presentation.labelColor,
-            fontSize: 12,
+            fontSize: 11,
             fontWeight: 600,
+            letterSpacing: "0.02em",
           },
           labelBgStyle: {
-            fill: "#ffffff",
-            fillOpacity: 0.96,
+            fill: presentation.labelBackground,
+            fillOpacity: 0.92,
             stroke: presentation.labelBorder,
             strokeWidth: 1,
           },
-          labelBgPadding: [10, 5] as [number, number],
-          labelBgBorderRadius: 10,
+          labelBgPadding: [12, 6] as [number, number],
+          labelBgBorderRadius: 999,
         };
       }),
     [activeEdgeIds, edges, hoveredEdgeId, selectedEdgeId]
@@ -183,7 +192,7 @@ function ArchitectureFlowInner({
 
   return (
     <div
-      className="relative h-full min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm xl:min-h-[860px]"
+      className="relative h-full min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm dark:border-slate-800/80 dark:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),_transparent_28%),linear-gradient(to_bottom,_rgba(2,6,23,0.98),_rgba(15,23,42,0.98))] xl:min-h-[860px]"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -212,10 +221,14 @@ function ArchitectureFlowInner({
         panOnDrag
         panOnScroll
         selectionOnDrag={false}
-        connectionLineStyle={{ stroke: "#2563eb", strokeWidth: 2.5 }}
+        connectionLineStyle={{ stroke: "#60a5fa", strokeWidth: 4, strokeDasharray: "8 6" }}
         connectionLineType={ConnectionLineType.SmoothStep}
         defaultEdgeOptions={{
           type: "smoothstep",
+          pathOptions: {
+            borderRadius: 18,
+            offset: 18,
+          },
           markerEnd: {
             type: MarkerType.ArrowClosed,
           },
@@ -255,14 +268,14 @@ function ArchitectureFlowInner({
         <MiniMap
           pannable
           zoomable
-          className="!border !bg-background/95"
+          className="!border !bg-background/95 dark:!border-slate-700"
           nodeColor={(node) => {
             const category = (node.data?.category ?? "service") as keyof typeof architectureCategoryStyles;
             return architectureCategoryStyles[category].minimap;
           }}
         />
         <Controls position="bottom-right" />
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="#cbd5e1" />
+        <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="var(--border)" />
       </ReactFlow>
 
       {isRunning ? (

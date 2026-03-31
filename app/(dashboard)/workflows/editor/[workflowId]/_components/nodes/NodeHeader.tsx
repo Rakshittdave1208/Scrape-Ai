@@ -20,10 +20,10 @@ function NodeHeader({
   const { deleteElements, getNode, setNodes } = useReactFlow();
 
   return (
-    <div className="drag-handle flex cursor-grab select-none items-center gap-2 p-2 active:cursor-grabbing">
-      <task.icon size={16} />
+    <div className="drag-handle flex cursor-grab select-none items-center gap-2 rounded-t-xl border-b border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-slate-50 p-3 active:cursor-grabbing dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <task.icon size={16} className="text-primary" />
       <div className="flex justify-between items-center w-full">
-        <p className="text-xs font-bold uppercase text-muted-foreground">
+        <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-700 dark:text-slate-200">
           {task.label}
         </p>
         <div className="flex gap-1 items-center">
