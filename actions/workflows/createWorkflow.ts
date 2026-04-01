@@ -3,20 +3,13 @@
 
 import prisma from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { createWorkflowSchema } from "@/schema/workflow";
 import { WorkflowStatus } from "@/types/workflow";
 import { createSampleProductWorkflowDefinition } from "@/lib/workflow/sampleProductWorkflow";
 
-export async function CreateWorkflow(formData: FormData) {
-  const name = formData.get("name") as string;
-  const description = (formData.get("description") as string) || null;
-
-  const parsed = createWorkflowSchema.safeParse({
-    name,
-    description,
-  });
+export async function CreateWorkflow(values: { name: string; description?: string | null }) {
+  const parsed = createWorkflowSchema.safeParse(values);
 
   if (!parsed.success) {
     throw new Error("Invalid form data");
@@ -41,5 +34,5 @@ export async function CreateWorkflow(formData: FormData) {
   // 🔥 refresh workflows page
   revalidatePath("/workflows");
 
-  redirect(`/workflows/editor/${workflow.id}`);
+  return { workflowId: workflow.id };
 }

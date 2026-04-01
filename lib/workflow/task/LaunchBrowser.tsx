@@ -6,7 +6,7 @@ export const LaunchBrowserTask = {
   nodeType: "scraperNode",
   label: "Launch Browser",
   icon: GlobeIcon,
-  category: "Browser",
+  category: "User Interactions",
   isEntryPoint: true,
   inputs: [
     {

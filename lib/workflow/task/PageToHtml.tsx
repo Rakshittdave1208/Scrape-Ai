@@ -6,7 +6,7 @@ export const PageToHtmlTask = {
   nodeType: "transformNode",
   label: "Get HTML from page",
   icon: CodeIcon,
-  category: "Extraction",
+  category: "Data Extraction",
   inputs: [
     {
       name: "Web page",

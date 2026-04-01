@@ -6,7 +6,7 @@ export const ExtractTextFromElementTask = {
   nodeType: "transformNode",
   label: "Extract text from element",
   icon: TextIcon,
-  category: "Extraction",
+  category: "Data Extraction",
   inputs: [
     {
       name: "Html",

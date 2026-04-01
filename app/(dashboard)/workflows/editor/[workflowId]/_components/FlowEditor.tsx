@@ -15,6 +15,7 @@ import {
 import { useTheme } from "next-themes";
 import {
   AlertTriangleIcon,
+  EraserIcon,
   PlayIcon,
   SparklesIcon,
   Trash2Icon,
@@ -272,6 +273,44 @@ function FlowEditor({
           <p className="mt-1 text-xs text-muted-foreground dark:text-zinc-400">
             Build the graph visually, then switch to Runs to inspect the latest execution state.
           </p>
+        </Panel>
+
+        <Panel
+          position="top-right"
+          className="flex items-center gap-2 rounded-xl border bg-background/95 px-3 py-2 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-[#111010]/95"
+        >
+          <div className="rounded-lg border border-border bg-background/80 px-2.5 py-1.5 text-xs text-muted-foreground dark:border-zinc-700 dark:bg-zinc-950/80 dark:text-zinc-400">
+            Credits left <span className="font-semibold text-foreground dark:text-white">{creditsRemaining}</span>
+          </div>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900 dark:hover:text-white"
+            onClick={loadDemoWorkflow}
+          >
+            <SparklesIcon size={14} />
+            Load Demo
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900 dark:hover:text-white"
+            onClick={clearCanvas}
+          >
+            <EraserIcon size={14} />
+            Clear Canvas
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            className="bg-emerald-500 text-black hover:bg-emerald-400"
+            onClick={runWorkflow}
+          >
+            <PlayIcon size={14} />
+            Execute
+          </Button>
         </Panel>
 
         {(executionError || executionLogs.length > 0) && (

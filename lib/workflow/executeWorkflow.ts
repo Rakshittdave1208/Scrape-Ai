@@ -1,5 +1,6 @@
 import type { Edge } from "@xyflow/react";
 
+import { TaskRegistry } from "@/lib/workflow/task/registry";
 import type { AppNode } from "@/types/appNode";
 import { TaskType } from "@/types/task";
 
@@ -9,6 +10,7 @@ export type WorkflowExecutionResult = {
   errorsByNode: Record<string, string>;
   order: string[];
   creditsUsed: number;
+  globalError: string | null;
 };
 
 function sortNodesTopologically(nodes: AppNode[], edges: Edge[]) {
@@ -42,10 +44,16 @@ function sortNodesTopologically(nodes: AppNode[], edges: Edge[]) {
   }
 
   if (orderedIds.length !== nodes.length) {
-    return nodes.map((node) => node.id);
+    return {
+      order: nodes.map((node) => node.id),
+      hasCycle: true,
+    };
   }
 
-  return orderedIds;
+  return {
+    order: orderedIds,
+    hasCycle: false,
+  };
 }
 
 function buildInputMap(node: AppNode, edges: Edge[], outputsByNode: WorkflowExecutionResult["outputsByNode"]) {
@@ -60,6 +68,24 @@ function buildInputMap(node: AppNode, edges: Edge[], outputsByNode: WorkflowExec
   return inputs;
 }
 
+function validateNodeInputs(node: AppNode, resolvedInputs: Record<string, unknown>) {
+  const task = TaskRegistry[node.data.type];
+
+  for (const input of task.inputs) {
+    if (!input.required) {
+      continue;
+    }
+
+    const value = resolvedInputs[input.name];
+    const isMissingString = typeof value === "string" && value.trim().length === 0;
+    const isMissingValue = value == null || isMissingString;
+
+    if (isMissingValue) {
+      throw new Error(`${input.name} is required.`);
+    }
+  }
+}
+
 function simulateNode(node: AppNode, resolvedInputs: Record<string, unknown>) {
   switch (node.data.type) {
     case TaskType.LAUNCH_BROWSER:
@@ -71,14 +97,52 @@ function simulateNode(node: AppNode, resolvedInputs: Record<string, unknown>) {
       };
     case TaskType.PAGE_TO_HTML:
       return {
-        Html: `<html><body>HTML from ${String(
+        Html: `<html><body><h1 class="product-title">Wireless Headphones Pro</h1><span class="product-price">$249</span><p>HTML from ${String(
           (resolvedInputs["Web page"] as { url?: string } | undefined)?.url ?? "connected page"
-        )}</body></html>`,
+        )}</p></body></html>`,
         "Web page": resolvedInputs["Web page"],
+      };
+    case TaskType.FILL_INPUT:
+      return {
+        "Web page": {
+          ...(resolvedInputs["Web page"] as Record<string, unknown> | undefined),
+          lastInteraction: `Filled ${String(resolvedInputs.Selector ?? "field")}`,
+          lastValue: resolvedInputs.Value ?? "",
+        },
+      };
+    case TaskType.CLICK_ELEMENT:
+      return {
+        "Web page": {
+          ...(resolvedInputs["Web page"] as Record<string, unknown> | undefined),
+          lastInteraction: `Clicked ${String(resolvedInputs.Selector ?? "element")}`,
+        },
+      };
+    case TaskType.NAVIGATE_URL:
+      return {
+        "Web page": {
+          ...(resolvedInputs["Web page"] as Record<string, unknown> | undefined),
+          url: resolvedInputs["Next URL"] ?? "",
+          navigatedAt: new Date().toISOString(),
+        },
+      };
+    case TaskType.SCROLL_TO_ELEMENT:
+      return {
+        "Web page": {
+          ...(resolvedInputs["Web page"] as Record<string, unknown> | undefined),
+          lastInteraction: `Scrolled to ${String(resolvedInputs.Selector ?? "element")}`,
+        },
       };
     case TaskType.EXTRACT_TEXT_FROM_ELEMENT:
       return {
-        "Extracted text": `Extracted ${String(resolvedInputs.Selector ?? "value")}`,
+        "Extracted text": `Extracted value for ${String(resolvedInputs.Selector ?? "selector")}`,
+      };
+    case TaskType.EXTRACT_DATA_WITH_AI:
+      return {
+        "Structured data": {
+          instruction: resolvedInputs.Instruction ?? "",
+          source: "ai-extraction",
+          payloadPreview: String(resolvedInputs.Html ?? "").slice(0, 120),
+        },
       };
     case TaskType.SCRAPER_NODE:
       return {
@@ -104,6 +168,39 @@ function simulateNode(node: AppNode, resolvedInputs: Record<string, unknown>) {
         result: template.replaceAll("{{value}}", source),
       };
     }
+    case TaskType.READ_PROPERTY_FROM_JSON: {
+      const jsonInput = resolvedInputs.JSON as Record<string, unknown> | undefined;
+      const propertyName = String(resolvedInputs["Property name"] ?? "");
+      return {
+        Value: jsonInput?.[propertyName] ?? "",
+      };
+    }
+    case TaskType.ADD_PROPERTY_TO_JSON: {
+      const jsonInput = (resolvedInputs.JSON as Record<string, unknown> | undefined) ?? {};
+      return {
+        "Updated JSON": {
+          ...jsonInput,
+          [String(resolvedInputs["Property name"] ?? "property")]: resolvedInputs["Property value"] ?? "",
+        },
+      };
+    }
+    case TaskType.WAIT_FOR_ELEMENT:
+      return {
+        "Web page": {
+          ...(resolvedInputs["Web page"] as Record<string, unknown> | undefined),
+          waitedFor: resolvedInputs.Selector ?? "",
+          timeoutMs: resolvedInputs["Timeout ms"] ?? 0,
+        },
+      };
+    case TaskType.SEND_TO_WEBHOOK:
+      return {
+        Response: {
+          ok: true,
+          destination: resolvedInputs["Webhook URL"] ?? "",
+          acceptedPayload: resolvedInputs.Payload ?? null,
+          deliveredAt: new Date().toISOString(),
+        },
+      };
     default:
       return {};
   }
@@ -113,7 +210,25 @@ export function executeWorkflow(nodes: AppNode[], edges: Edge[]): WorkflowExecut
   const outputsByNode: WorkflowExecutionResult["outputsByNode"] = {};
   const errorsByNode: WorkflowExecutionResult["errorsByNode"] = {};
   const logs: string[] = [];
-  const orderedNodeIds = sortNodesTopologically(nodes, edges);
+  const { order: orderedNodeIds, hasCycle } = sortNodesTopologically(nodes, edges);
+  let creditsUsed = 0;
+
+  if (hasCycle) {
+    for (const node of nodes) {
+      errorsByNode[node.id] = "This workflow contains a cycle. Remove circular connections before running.";
+    }
+
+    logs.push("Execution blocked: the workflow graph contains a cycle.");
+
+    return {
+      logs,
+      outputsByNode,
+      errorsByNode,
+      order: orderedNodeIds,
+      creditsUsed,
+      globalError: "Execution blocked. The workflow graph contains a cycle.",
+    };
+  }
 
   for (const nodeId of orderedNodeIds) {
     const node = nodes.find((item) => item.id === nodeId);
@@ -122,18 +237,26 @@ export function executeWorkflow(nodes: AppNode[], edges: Edge[]): WorkflowExecut
     }
 
     try {
+      const upstreamFailure = edges.find(
+        (edge) => edge.target === node.id && errorsByNode[edge.source]
+      );
+
+      if (upstreamFailure) {
+        throw new Error("Blocked by an upstream node failure.");
+      }
+
       const resolvedInputs = buildInputMap(node, edges, outputsByNode);
+      validateNodeInputs(node, resolvedInputs);
       const output = simulateNode(node, resolvedInputs);
       outputsByNode[node.id] = output;
-      logs.push(`${node.data.label} executed`);
+      creditsUsed += node.data.cost ?? 0;
+      logs.push(`${node.data.label} executed successfully.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown execution error";
       errorsByNode[node.id] = message;
-      logs.push(`${node.data.label} failed`);
+      logs.push(`${node.data.label} failed: ${message}`);
     }
   }
-
-  const creditsUsed = nodes.reduce((total, node) => total + (node.data.cost ?? 0), 0);
 
   return {
     logs,
@@ -141,5 +264,9 @@ export function executeWorkflow(nodes: AppNode[], edges: Edge[]): WorkflowExecut
     errorsByNode,
     order: orderedNodeIds,
     creditsUsed,
+    globalError:
+      Object.keys(errorsByNode).length > 0
+        ? "One or more nodes failed during execution."
+        : null,
   };
 }

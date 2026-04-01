@@ -35,17 +35,35 @@ const categoryTheme: Record<
     iconWrap: "bg-violet-500/12 text-violet-700 ring-violet-500/20 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/30",
     accent: "bg-violet-400",
   },
-  Browser: {
+  "User Interactions": {
     panel: "border-emerald-200 bg-gradient-to-br from-emerald-50 via-background to-lime-50 hover:border-emerald-300 dark:border-emerald-900/50 dark:from-emerald-950/70 dark:via-zinc-950 dark:to-lime-950/35 dark:hover:border-emerald-700/70",
     badge: "bg-emerald-500/12 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-500/30",
     iconWrap: "bg-emerald-500/12 text-emerald-700 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-500/30",
     accent: "bg-emerald-400",
   },
-  Extraction: {
+  "Data Extraction": {
     panel: "border-amber-200 bg-gradient-to-br from-amber-50 via-background to-orange-50 hover:border-amber-300 dark:border-amber-900/50 dark:from-amber-950/70 dark:via-zinc-950 dark:to-orange-950/35 dark:hover:border-amber-700/70",
     badge: "bg-amber-500/12 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-500/30",
     iconWrap: "bg-amber-500/12 text-amber-700 ring-amber-500/20 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-500/30",
     accent: "bg-amber-400",
+  },
+  "Data Storage": {
+    panel: "border-cyan-200 bg-gradient-to-br from-cyan-50 via-background to-sky-50 hover:border-cyan-300 dark:border-cyan-900/50 dark:from-cyan-950/70 dark:via-zinc-950 dark:to-sky-950/35 dark:hover:border-cyan-700/70",
+    badge: "bg-cyan-500/12 text-cyan-700 ring-1 ring-cyan-500/20 dark:bg-cyan-500/15 dark:text-cyan-200 dark:ring-cyan-500/30",
+    iconWrap: "bg-cyan-500/12 text-cyan-700 ring-cyan-500/20 dark:bg-cyan-500/15 dark:text-cyan-200 dark:ring-cyan-500/30",
+    accent: "bg-cyan-400",
+  },
+  "Timing Controls": {
+    panel: "border-rose-200 bg-gradient-to-br from-rose-50 via-background to-pink-50 hover:border-rose-300 dark:border-rose-900/50 dark:from-rose-950/70 dark:via-zinc-950 dark:to-pink-950/35 dark:hover:border-rose-700/70",
+    badge: "bg-rose-500/12 text-rose-700 ring-1 ring-rose-500/20 dark:bg-rose-500/15 dark:text-rose-200 dark:ring-rose-500/30",
+    iconWrap: "bg-rose-500/12 text-rose-700 ring-rose-500/20 dark:bg-rose-500/15 dark:text-rose-200 dark:ring-rose-500/30",
+    accent: "bg-rose-400",
+  },
+  "Result Delivery": {
+    panel: "border-indigo-200 bg-gradient-to-br from-indigo-50 via-background to-violet-50 hover:border-indigo-300 dark:border-indigo-900/50 dark:from-indigo-950/70 dark:via-zinc-950 dark:to-violet-950/35 dark:hover:border-indigo-700/70",
+    badge: "bg-indigo-500/12 text-indigo-700 ring-1 ring-indigo-500/20 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/30",
+    iconWrap: "bg-indigo-500/12 text-indigo-700 ring-indigo-500/20 dark:bg-indigo-500/15 dark:text-indigo-200 dark:ring-indigo-500/30",
+    accent: "bg-indigo-400",
   },
 };
 
@@ -84,7 +102,15 @@ function TaskMenu() {
 
       <Accordion
         type="multiple"
-        defaultValue={["Core", "Browser", "crud", "Extraction"]}
+        defaultValue={[
+          "Core",
+          "User Interactions",
+          "Data Extraction",
+          "Data Storage",
+          "Timing Controls",
+          "Result Delivery",
+          "crud",
+        ]}
         className="w-full"
       >
         {Object.entries(TaskRegistryByCategory).map(([category, tasks]) => (

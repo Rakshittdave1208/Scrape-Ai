@@ -7,6 +7,15 @@ export enum TaskType {
   SCRAPER_NODE = "SCRAPER_NODE",
   API_NODE = "API_NODE",
   TRANSFORM_NODE = "TRANSFORM_NODE",
+  FILL_INPUT = "FILL_INPUT",
+  CLICK_ELEMENT = "CLICK_ELEMENT",
+  NAVIGATE_URL = "NAVIGATE_URL",
+  SCROLL_TO_ELEMENT = "SCROLL_TO_ELEMENT",
+  EXTRACT_DATA_WITH_AI = "EXTRACT_DATA_WITH_AI",
+  READ_PROPERTY_FROM_JSON = "READ_PROPERTY_FROM_JSON",
+  ADD_PROPERTY_TO_JSON = "ADD_PROPERTY_TO_JSON",
+  WAIT_FOR_ELEMENT = "WAIT_FOR_ELEMENT",
+  SEND_TO_WEBHOOK = "SEND_TO_WEBHOOK",
 }
 
 export enum TaskParamType {
@@ -16,7 +25,13 @@ export enum TaskParamType {
   BROWSER_INSTANCE = "BROWSER_INSTANCE",
 }
 
-export type TaskCategory = "Browser" | "Extraction" | "Core";
+export type TaskCategory =
+  | "Core"
+  | "User Interactions"
+  | "Data Extraction"
+  | "Data Storage"
+  | "Timing Controls"
+  | "Result Delivery";
 
 export interface TaskParam {
   name: string;

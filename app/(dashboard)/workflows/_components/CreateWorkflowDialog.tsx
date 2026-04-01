@@ -1,11 +1,12 @@
 
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useTransition } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CustomDialogHeader } from "@/components/uiii/CustomDialogHeader";
 import { Layers2Icon, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import {
   createWorkflowSchema,
@@ -28,7 +29,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-import { useMutation } from "@tanstack/react-query";
 import { CreateWorkflow } from "@/actions/workflows/createWorkflow";
 
 import { toast } from "sonner";
@@ -39,6 +39,8 @@ export default function CreateWorkflowDialog({
   triggerText?: string;
 }) {
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const form = useForm<CreateWorkflowSchemaType>({
     resolver: zodResolver(createWorkflowSchema),
@@ -48,48 +50,33 @@ export default function CreateWorkflowDialog({
     },
   });
 
-  /* ------------------- MUTATION ------------------- */
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: async (formData: FormData) => {
-      return await CreateWorkflow(formData);
-    },
-
-    onSuccess: () => {
-      toast.success("Workflow Created", { id: "create-workflow" });
-
-      form.reset({
-        name: "",
-        description: "",
-      });
-
-      setOpen(false);
-    },
-
-    onError: (error) => {
-      toast.error("Failed to create workflow", { id: "create-workflow" });
-    },
-  });
-
-  /* ------------------- SUBMIT ------------------- */
-
   const onSubmit = useCallback(
     (values: CreateWorkflowSchemaType) => {
       toast.loading("Creating Workflow...", { id: "create-workflow" });
 
-      const formData = new FormData();
-      formData.append("name", values.name);
+      startTransition(async () => {
+        try {
+          const result = await CreateWorkflow({
+            name: values.name,
+            description: values.description || null,
+          });
 
-      if (values.description) {
-        formData.append("description", values.description);
-      }
+          toast.success("Workflow Created", { id: "create-workflow" });
 
-      mutate(formData);
+          form.reset({
+            name: "",
+            description: "",
+          });
+
+          setOpen(false);
+          router.push(`/workflows/editor/${result.workflowId}`);
+        } catch {
+          toast.error("Failed to create workflow", { id: "create-workflow" });
+        }
+      });
     },
-    [mutate]
+    [form, router]
   );
-
-  /* ------------------- UI ------------------- */
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

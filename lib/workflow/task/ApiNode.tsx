@@ -7,7 +7,7 @@ export const ApiNodeTask = {
   nodeType: "apiNode",
   label: "API Node",
   icon: Globe2Icon,
-  category: "Core",
+  category: "Result Delivery",
   description: "Send data to an API endpoint and return the JSON response.",
   inputs: [
     {

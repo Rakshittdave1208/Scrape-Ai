@@ -292,8 +292,8 @@ export function useWorkflowCanvas({
 
     const result = executeWorkflow(nodes, edges);
 
-    if (Object.keys(result.errorsByNode).length > 0) {
-      setExecutionError("One or more nodes failed during execution.");
+    if (result.globalError) {
+      setExecutionError(result.globalError);
     }
 
     credits.consume(result.creditsUsed);
