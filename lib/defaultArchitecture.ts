@@ -1,5 +1,6 @@
 import type { XYPosition } from "@xyflow/react";
 
+import { getArchitectureStorageKey } from "@/lib/architecture/projects";
 import {
   architectureTemplates,
   defaultArchitecture as defaultArchitectureSeed,
@@ -35,6 +36,10 @@ export function createDefaultArchitectureGraph() {
     nodes: defaultArchitectureSeed.nodes.map(cloneArchitectureNode),
     edges: defaultArchitectureSeed.edges.map(cloneArchitectureEdge),
   };
+}
+
+export function getArchitectureGraphStorageKey(architectureId: string) {
+  return getArchitectureStorageKey(architectureId);
 }
 
 export function getArchitectureTemplateByKey(templateKey: string) {

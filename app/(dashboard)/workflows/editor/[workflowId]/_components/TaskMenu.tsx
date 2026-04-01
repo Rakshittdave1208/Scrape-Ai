@@ -12,7 +12,13 @@ import { createFlowNode } from "@/lib/workflow/createFlowNode";
 import type { AppNode } from "@/types/appNode";
 import type { TaskCategory, TaskType, WorkflowTask } from "@/types/task";
 import { useEdges, useNodes, useReactFlow } from "@xyflow/react";
-import { EyeIcon, PencilIcon, SparklesIcon, Trash2Icon } from "lucide-react";
+import {
+  ChevronRightIcon,
+  EyeIcon,
+  PencilIcon,
+  SparklesIcon,
+  Trash2Icon,
+} from "lucide-react";
 
 const categoryTheme: Record<
   TaskCategory,
@@ -20,22 +26,26 @@ const categoryTheme: Record<
     panel: string;
     badge: string;
     iconWrap: string;
+    accent: string;
   }
 > = {
   Core: {
-    panel: "border-sky-200/80 bg-gradient-to-br from-sky-50 via-white to-cyan-50 dark:border-sky-900/60 dark:from-sky-950/30 dark:via-background dark:to-cyan-950/20",
-    badge: "bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300",
-    iconWrap: "bg-sky-100 text-sky-700 ring-sky-200 dark:bg-sky-950/70 dark:text-sky-300 dark:ring-sky-900/70",
+    panel: "border-violet-200 bg-gradient-to-br from-violet-50 via-background to-fuchsia-50 hover:border-violet-300 dark:border-violet-900/50 dark:from-violet-950/70 dark:via-zinc-950 dark:to-fuchsia-950/35 dark:hover:border-violet-700/70",
+    badge: "bg-violet-500/12 text-violet-700 ring-1 ring-violet-500/20 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/30",
+    iconWrap: "bg-violet-500/12 text-violet-700 ring-violet-500/20 dark:bg-violet-500/15 dark:text-violet-200 dark:ring-violet-500/30",
+    accent: "bg-violet-400",
   },
   Browser: {
-    panel: "border-emerald-200/80 bg-gradient-to-br from-emerald-50 via-white to-lime-50 dark:border-emerald-900/60 dark:from-emerald-950/30 dark:via-background dark:to-lime-950/20",
-    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300",
-    iconWrap: "bg-emerald-100 text-emerald-700 ring-emerald-200 dark:bg-emerald-950/70 dark:text-emerald-300 dark:ring-emerald-900/70",
+    panel: "border-emerald-200 bg-gradient-to-br from-emerald-50 via-background to-lime-50 hover:border-emerald-300 dark:border-emerald-900/50 dark:from-emerald-950/70 dark:via-zinc-950 dark:to-lime-950/35 dark:hover:border-emerald-700/70",
+    badge: "bg-emerald-500/12 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-500/30",
+    iconWrap: "bg-emerald-500/12 text-emerald-700 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-200 dark:ring-emerald-500/30",
+    accent: "bg-emerald-400",
   },
   Extraction: {
-    panel: "border-amber-200/80 bg-gradient-to-br from-amber-50 via-white to-orange-50 dark:border-amber-900/60 dark:from-amber-950/30 dark:via-background dark:to-orange-950/20",
-    badge: "bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300",
-    iconWrap: "bg-amber-100 text-amber-700 ring-amber-200 dark:bg-amber-950/70 dark:text-amber-300 dark:ring-amber-900/70",
+    panel: "border-amber-200 bg-gradient-to-br from-amber-50 via-background to-orange-50 hover:border-amber-300 dark:border-amber-900/50 dark:from-amber-950/70 dark:via-zinc-950 dark:to-orange-950/35 dark:hover:border-amber-700/70",
+    badge: "bg-amber-500/12 text-amber-700 ring-1 ring-amber-500/20 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-500/30",
+    iconWrap: "bg-amber-500/12 text-amber-700 ring-amber-500/20 dark:bg-amber-500/15 dark:text-amber-200 dark:ring-amber-500/30",
+    accent: "bg-amber-400",
   },
 };
 
@@ -56,18 +66,18 @@ function TaskMenu() {
   };
 
   return (
-    <aside className="h-full overflow-y-auto border-r bg-gradient-to-b from-background via-background to-muted/25 p-3">
-      <div className="sticky top-0 z-10 mb-4 rounded-xl border bg-background/95 p-4 shadow-sm backdrop-blur">
+    <aside className="h-full overflow-y-auto border-r bg-background p-3 text-foreground dark:border-zinc-800 dark:bg-[#0f0c0c] dark:text-zinc-100">
+      <div className="sticky top-0 z-10 mb-4 rounded-2xl border bg-card/95 p-4 shadow-lg backdrop-blur dark:border-zinc-800 dark:bg-[#151111]/95">
         <div className="mb-2 flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-sky-500 to-emerald-500 text-white shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 via-fuchsia-500 to-emerald-400 text-white shadow-[0_12px_26px_rgba(34,197,94,0.2)]">
             <SparklesIcon size={18} />
           </div>
           <div>
-            <p className="text-sm font-semibold text-foreground">Node Types</p>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Workflow Builder</p>
+            <p className="text-sm font-semibold text-foreground dark:text-white">Node Types</p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground dark:text-zinc-500">Workflow Builder</p>
           </div>
         </div>
-        <p className="text-xs leading-5 text-muted-foreground">
+        <p className="text-xs leading-5 text-muted-foreground dark:text-zinc-400">
           Click to add or drag a node type into the workflow canvas.
         </p>
       </div>
@@ -78,8 +88,12 @@ function TaskMenu() {
         className="w-full"
       >
         {Object.entries(TaskRegistryByCategory).map(([category, tasks]) => (
-          <AccordionItem key={category} value={category} className="mb-3 rounded-xl border bg-background/70 px-3">
-            <AccordionTrigger className="py-3 font-bold hover:no-underline">
+          <AccordionItem
+            key={category}
+            value={category}
+            className="mb-3 rounded-2xl border bg-card/80 px-3 dark:border-zinc-800 dark:bg-[#151111]"
+          >
+            <AccordionTrigger className="py-3 font-bold text-foreground hover:no-underline dark:text-zinc-100">
               <div className="flex items-center gap-2">
                 <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${categoryTheme[category as TaskCategory].badge}`}>
                   {category}
@@ -94,15 +108,15 @@ function TaskMenu() {
           </AccordionItem>
         ))}
 
-        <AccordionItem value="crud" className="rounded-xl border bg-background/70 px-3">
-          <AccordionTrigger className="py-3 font-bold hover:no-underline">
-            <span className="rounded-full bg-rose-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-700 dark:bg-rose-950/70 dark:text-rose-300">
+        <AccordionItem value="crud" className="rounded-2xl border bg-card/80 px-3 dark:border-zinc-800 dark:bg-[#151111]">
+          <AccordionTrigger className="py-3 font-bold text-foreground hover:no-underline dark:text-zinc-100">
+            <span className="rounded-full bg-rose-500/15 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-rose-200 ring-1 ring-rose-500/30">
               Canvas
             </span>
           </AccordionTrigger>
           <AccordionContent className="space-y-3">
-            <div className="rounded-xl border bg-gradient-to-br from-white via-white to-slate-50 p-3 text-xs text-muted-foreground shadow-sm dark:from-background dark:via-background dark:to-slate-950/20">
-              <div className="mb-2 flex items-center gap-2 font-medium text-foreground">
+            <div className="rounded-2xl border bg-background/80 p-3 text-xs text-muted-foreground shadow-sm dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-400">
+              <div className="mb-2 flex items-center gap-2 font-medium text-foreground dark:text-zinc-100">
                 <EyeIcon size={14} />
                 Canvas overview
               </div>
@@ -111,8 +125,8 @@ function TaskMenu() {
               <p>Selected nodes: {selectedNodes.length}</p>
             </div>
 
-            <div className="rounded-xl border bg-gradient-to-br from-white via-white to-slate-50 p-3 text-xs text-muted-foreground shadow-sm dark:from-background dark:via-background dark:to-slate-950/20">
-              <div className="mb-2 flex items-center gap-2 font-medium text-foreground">
+            <div className="rounded-2xl border bg-background/80 p-3 text-xs text-muted-foreground shadow-sm dark:border-zinc-800 dark:bg-zinc-950/70 dark:text-zinc-400">
+              <div className="mb-2 flex items-center gap-2 font-medium text-foreground dark:text-zinc-100">
                 <PencilIcon size={14} />
                 Node editing
               </div>
@@ -122,7 +136,7 @@ function TaskMenu() {
             <Button
               type="button"
               variant="outline"
-              className="w-full justify-start"
+              className="w-full justify-start border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-white"
               onClick={() => setEdges([])}
               disabled={edges.length === 0}
             >
@@ -133,7 +147,7 @@ function TaskMenu() {
             <Button
               type="button"
               variant="destructive"
-              className="w-full justify-start"
+              className="w-full justify-start bg-rose-500/90 text-white hover:bg-rose-500"
               onClick={deleteSelectedNodes}
               disabled={selectedNodes.length === 0}
             >
@@ -210,26 +224,36 @@ function TaskMenuButtonContent({
     <Button
       type="button"
       variant="ghost"
-      className={`group flex h-auto w-full items-start justify-between gap-3 rounded-xl border px-3 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${theme.panel}`}
+      className={`group flex h-auto w-full items-start justify-between gap-3 rounded-2xl border px-3 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg ${theme.panel}`}
       draggable
       onClick={onAddNode}
       onDragStart={onDragStart}
     >
-      <div className="flex min-w-0 items-start gap-3">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
         <div className={`mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ring-1 ${theme.iconWrap}`}>
           <task.icon size={18} />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="mb-1 flex items-center gap-2">
-            <span className="truncate text-sm font-semibold text-foreground">{task.label}</span>
+            <span className="line-clamp-2 break-words text-sm font-semibold leading-5 text-foreground dark:text-zinc-100">
+              {task.label}
+            </span>
             <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] ${theme.badge}`}>
               {task.category}
             </span>
           </div>
           {task.description && (
-            <p className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">{task.description}</p>
+            <p className="line-clamp-3 break-words text-[11px] leading-4 text-muted-foreground dark:text-zinc-400">{task.description}</p>
           )}
         </div>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="rounded-full border border-border bg-background/80 px-2 py-1 text-[11px] font-semibold text-muted-foreground dark:border-zinc-700 dark:bg-zinc-950/80 dark:text-zinc-300">
+          {task.credits}
+        </span>
+        <div className={`h-2.5 w-2.5 rounded-full ${theme.accent}`} />
+        <ChevronRightIcon size={14} className="text-muted-foreground transition group-hover:translate-x-0.5 group-hover:text-foreground dark:text-zinc-500 dark:group-hover:text-zinc-300" />
       </div>
     </Button>
   );

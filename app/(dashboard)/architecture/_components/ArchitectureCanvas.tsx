@@ -136,7 +136,7 @@ function wait(duration: number) {
   });
 }
 
-export default function ArchitectureCanvas() {
+export default function ArchitectureCanvas({ architectureId }: { architectureId: string }) {
   const {
     nodes,
     edges,
@@ -161,7 +161,7 @@ export default function ArchitectureCanvas() {
     deleteEdge,
     setSelection,
     clearStatuses,
-  } = useCanvasState();
+  } = useCanvasState(architectureId);
   const { credits, dailyLimit, progress, consumeCredits } = useCredits();
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
   const [activeEdgeIds, setActiveEdgeIds] = useState<string[]>([]);
@@ -352,7 +352,7 @@ export default function ArchitectureCanvas() {
       ref={canvasShellRef}
       className={cn(
         "flex h-full min-h-0 flex-1 min-w-0 flex-col gap-4",
-        isFullscreen && "h-screen bg-background p-4"
+        isFullscreen && "h-screen bg-background p-4 dark:bg-slate-950"
       )}
     >
       <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-2xl border bg-background/92 px-4 py-3 shadow-sm backdrop-blur dark:border-slate-800/80 dark:bg-slate-950/88">
@@ -405,7 +405,13 @@ export default function ArchitectureCanvas() {
             <EraserIcon size={14} />
             Clear Canvas
           </Button>
-          <Button type="button" size="sm" onClick={() => void runArchitecture()} disabled={isRunning}>
+          <Button
+            type="button"
+            size="sm"
+            className="shadow-sm"
+            onClick={() => void runArchitecture()}
+            disabled={isRunning}
+          >
             <PlayIcon size={14} />
             Run Architecture
           </Button>

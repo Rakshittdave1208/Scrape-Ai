@@ -29,6 +29,7 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { MoveIcon, Trash2Icon } from "lucide-react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import type { ArchitectureTemplate } from "@/lib/defaultArchitecture";
@@ -79,6 +80,8 @@ function ArchitectureFlowInner({
 }: ArchitectureFlowInnerProps) {
   const { fitView, screenToFlowPosition } = useReactFlow();
   const nodesInitialized = useNodesInitialized();
+  const { resolvedTheme } = useTheme();
+  const activeTheme = resolvedTheme === "dark" ? "dark" : "light";
 
   useEffect(() => {
     if (nodes.length === 0 || !nodesInitialized) {
@@ -147,6 +150,7 @@ function ArchitectureFlowInner({
           isActive: activeEdgeIds.includes(edge.id),
           isHovered: hoveredEdgeId === edge.id,
           isSelected: selectedEdgeId === edge.id,
+          theme: activeTheme,
         });
 
         return {
@@ -187,7 +191,7 @@ function ArchitectureFlowInner({
           labelBgBorderRadius: 999,
         };
       }),
-    [activeEdgeIds, edges, hoveredEdgeId, selectedEdgeId]
+    [activeEdgeIds, activeTheme, edges, hoveredEdgeId, selectedEdgeId]
   );
 
   return (
@@ -229,7 +233,11 @@ function ArchitectureFlowInner({
         panOnDrag
         panOnScroll
         selectionOnDrag={false}
-        connectionLineStyle={{ stroke: "#60a5fa", strokeWidth: 4, strokeDasharray: "8 6" }}
+        connectionLineStyle={{
+          stroke: activeTheme === "dark" ? "#60a5fa" : "#2563eb",
+          strokeWidth: 4,
+          strokeDasharray: "8 6",
+        }}
         connectionLineType={ConnectionLineType.SmoothStep}
         defaultEdgeOptions={{
           type: "smoothstep",
@@ -283,7 +291,12 @@ function ArchitectureFlowInner({
           }}
         />
         <Controls position="bottom-right" />
-        <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="var(--border)" />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={22}
+          size={1.2}
+          color={activeTheme === "dark" ? "#334155" : "#cbd5e1"}
+        />
       </ReactFlow>
 
       {isRunning ? (

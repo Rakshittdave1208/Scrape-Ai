@@ -60,47 +60,57 @@ type EdgePresentationOptions = {
   isActive?: boolean;
   isHovered?: boolean;
   isSelected?: boolean;
+  theme?: "light" | "dark";
 };
 
 export function getArchitectureEdgePresentation({
   isActive,
   isHovered,
   isSelected,
+  theme = "light",
 }: EdgePresentationOptions) {
+  const isDark = theme === "dark";
+
   if (isActive) {
     return {
-      stroke: "#14b8a6",
+      stroke: isDark ? "#2dd4bf" : "#0f766e",
       strokeWidth: 4.5,
       animated: true,
-      labelColor: "#ccfbf1",
-      labelBorder: "#2dd4bf",
-      labelBackground: "rgba(15, 23, 42, 0.92)",
+      labelColor: isDark ? "#ccfbf1" : "#042f2e",
+      labelBorder: isDark ? "#2dd4bf" : "#14b8a6",
+      labelBackground: isDark ? "rgba(15, 23, 42, 0.92)" : "rgba(240, 253, 250, 0.94)",
       dashArray: "8 5",
-      dropShadow: "drop-shadow(0 0 10px rgba(20, 184, 166, 0.45))",
+      dropShadow: isDark
+        ? "drop-shadow(0 0 10px rgba(20, 184, 166, 0.45))"
+        : "drop-shadow(0 4px 10px rgba(13, 148, 136, 0.18))",
     };
   }
 
   if (isHovered || isSelected) {
     return {
-      stroke: "#60a5fa",
+      stroke: isDark ? "#60a5fa" : "#2563eb",
       strokeWidth: 4,
       animated: true,
-      labelColor: "#dbeafe",
-      labelBorder: "#60a5fa",
-      labelBackground: "rgba(15, 23, 42, 0.92)",
+      labelColor: isDark ? "#dbeafe" : "#1e3a8a",
+      labelBorder: isDark ? "#60a5fa" : "#3b82f6",
+      labelBackground: isDark ? "rgba(15, 23, 42, 0.92)" : "rgba(239, 246, 255, 0.96)",
       dashArray: isSelected ? "0" : "7 5",
-      dropShadow: "drop-shadow(0 0 8px rgba(96, 165, 250, 0.35))",
+      dropShadow: isDark
+        ? "drop-shadow(0 0 8px rgba(96, 165, 250, 0.35))"
+        : "drop-shadow(0 4px 10px rgba(37, 99, 235, 0.16))",
     };
   }
 
   return {
-    stroke: "#94a3b8",
+    stroke: isDark ? "#94a3b8" : "#64748b",
     strokeWidth: 3.2,
     animated: false,
-    labelColor: "#e2e8f0",
-    labelBorder: "rgba(148, 163, 184, 0.35)",
-    labelBackground: "rgba(15, 23, 42, 0.82)",
+    labelColor: isDark ? "#e2e8f0" : "#334155",
+    labelBorder: isDark ? "rgba(148, 163, 184, 0.35)" : "rgba(100, 116, 139, 0.24)",
+    labelBackground: isDark ? "rgba(15, 23, 42, 0.82)" : "rgba(248, 250, 252, 0.98)",
     dashArray: "0",
-    dropShadow: "drop-shadow(0 2px 6px rgba(15, 23, 42, 0.18))",
+    dropShadow: isDark
+      ? "drop-shadow(0 2px 6px rgba(15, 23, 42, 0.18))"
+      : "drop-shadow(0 3px 8px rgba(15, 23, 42, 0.08))",
   };
 }

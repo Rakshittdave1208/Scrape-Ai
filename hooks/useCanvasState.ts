@@ -4,11 +4,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useEdgesState, useNodesState, type EdgeChange, type NodeChange, type XYPosition } from "@xyflow/react";
 
 import {
-  ARCHITECTURE_STORAGE_KEY,
   createArchitectureNodeFromTemplate,
   createDefaultArchitectureGraph,
+  getArchitectureGraphStorageKey,
   type ArchitectureTemplate,
 } from "@/lib/defaultArchitecture";
+import { touchArchitectureProject } from "@/lib/architecture/projects";
 import type {
   ArchitectureCategory,
   ArchitectureEdge,
@@ -72,8 +73,8 @@ function normalizeGraph(graph?: Partial<GraphState>) {
   };
 }
 
-function readStoredGraph() {
-  const stored = localStorage.getItem(ARCHITECTURE_STORAGE_KEY);
+function readStoredGraph(storageKey: string) {
+  const stored = localStorage.getItem(storageKey);
 
   if (!stored) {
     return null;
@@ -92,8 +93,9 @@ function readStoredGraph() {
   }
 }
 
-export function useCanvasState() {
+export function useCanvasState(architectureId: string) {
   const initialGraph = useMemo(() => createDefaultArchitectureGraph(), []);
+  const storageKey = useMemo(() => getArchitectureGraphStorageKey(architectureId), [architectureId]);
   const [nodes, setNodes, onNodesChangeBase] = useNodesState(initialGraph.nodes);
   const [edges, setEdges, onEdgesChangeBase] = useEdgesState(initialGraph.edges);
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
@@ -101,7 +103,7 @@ export function useCanvasState() {
   const [hasHydrated, setHasHydrated] = useState(false);
 
   useEffect(() => {
-    const storedGraph = readStoredGraph();
+    const storedGraph = readStoredGraph(storageKey);
 
     if (storedGraph) {
       setNodes(storedGraph.nodes);
@@ -113,15 +115,16 @@ export function useCanvasState() {
     }
 
     setHasHydrated(true);
-  }, [initialGraph, setEdges, setNodes]);
+  }, [initialGraph, setEdges, setNodes, storageKey]);
 
   useEffect(() => {
     if (!hasHydrated) {
       return;
     }
 
-    localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify({ nodes, edges }));
-  }, [edges, hasHydrated, nodes]);
+    localStorage.setItem(storageKey, JSON.stringify({ nodes, edges }));
+    touchArchitectureProject(architectureId);
+  }, [architectureId, edges, hasHydrated, nodes, storageKey]);
 
   useEffect(() => {
     if (selectedNodeId && !nodes.some((node) => node.id === selectedNodeId)) {
@@ -150,11 +153,12 @@ export function useCanvasState() {
   );
 
   const saveGraph = useCallback(() => {
-    localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify({ nodes, edges }));
-  }, [edges, nodes]);
+    localStorage.setItem(storageKey, JSON.stringify({ nodes, edges }));
+    touchArchitectureProject(architectureId);
+  }, [architectureId, edges, nodes, storageKey]);
 
   const loadGraph = useCallback(() => {
-    const storedGraph = readStoredGraph();
+    const storedGraph = readStoredGraph(storageKey);
 
     if (!storedGraph) {
       return;
@@ -162,7 +166,7 @@ export function useCanvasState() {
 
     setNodes(storedGraph.nodes);
     setEdges(storedGraph.edges);
-  }, [setEdges, setNodes]);
+  }, [setEdges, setNodes, storageKey]);
 
   const resetGraph = useCallback(() => {
     const defaultGraph = createDefaultArchitectureGraph();
@@ -170,8 +174,9 @@ export function useCanvasState() {
     setEdges(defaultGraph.edges);
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
-    localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify(defaultGraph));
-  }, [setEdges, setNodes]);
+    localStorage.setItem(storageKey, JSON.stringify(defaultGraph));
+    touchArchitectureProject(architectureId);
+  }, [architectureId, setEdges, setNodes, storageKey]);
 
   const clearGraph = useCallback(() => {
     const emptyGraph = {
@@ -183,8 +188,9 @@ export function useCanvasState() {
     setEdges(emptyGraph.edges);
     setSelectedNodeId(null);
     setSelectedEdgeId(null);
-    localStorage.setItem(ARCHITECTURE_STORAGE_KEY, JSON.stringify(emptyGraph));
-  }, [setEdges, setNodes]);
+    localStorage.setItem(storageKey, JSON.stringify(emptyGraph));
+    touchArchitectureProject(architectureId);
+  }, [architectureId, setEdges, setNodes, storageKey]);
 
   const addNodeFromTemplate = useCallback(
     (template: ArchitectureTemplate, position: XYPosition) => {

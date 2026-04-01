@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  ChevronsLeftIcon,
+  ChevronsRightIcon,
   GitBranchIcon,
   CoinsIcon,
   HomeIcon,
@@ -9,11 +11,12 @@ import {
   ShieldCheckIcon,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Logo from "./Logo";
 import Link from "next/link";
 import { Button, buttonVariants } from "../ui/button";
 import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 // Define sidebar routes
 const routes = [
@@ -26,23 +29,46 @@ const routes = [
 
 function DesktopSidebar() {
   const pathname = usePathname();
-  const activeRoute =
-    routes.find(
-      (route) => route.href.length > 0 && pathname.includes(route.href)
-    ) || routes[0];
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  useEffect(() => {
+    const savedState = window.localStorage.getItem("desktop-sidebar-collapsed");
+    setIsCollapsed(savedState === "true");
+  }, []);
+
+  const toggleSidebar = () => {
+    setIsCollapsed((current) => {
+      const next = !current;
+      window.localStorage.setItem("desktop-sidebar-collapsed", String(next));
+      return next;
+    });
+  };
 
   return (
     <div
-      className="hidden relative md:block min-w-[280px] max-w-[280px] h-screen overflow-hidden
-      w-full bg-primary/5 dark:bg-secondary/30 dark:text-foreground
-      text-muted-foreground border-r-2 border-separate p-4"
+      className={cn(
+        "relative hidden h-screen overflow-hidden border-r-2 border-separate bg-primary/5 p-4 text-muted-foreground transition-[width,min-width,max-width,padding] duration-300 dark:bg-secondary/30 dark:text-foreground md:block",
+        isCollapsed ? "min-w-[92px] max-w-[92px] w-[92px] px-3" : "min-w-[280px] max-w-[280px] w-full"
+      )}
     >
-      {/* Logo Section */}
-      <Logo />
-      <div className="flex flex-col p-2">TODO Credits</div>
+      <div className="mb-4 flex items-start justify-between gap-2">
+        <div className={cn("overflow-hidden", isCollapsed && "pt-1")}>
+          {isCollapsed ? <Logo fontSize="text-base" iconSize={18} /> : <Logo />}
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="shrink-0 rounded-xl"
+          onClick={toggleSidebar}
+        >
+          {isCollapsed ? <ChevronsRightIcon size={18} /> : <ChevronsLeftIcon size={18} />}
+        </Button>
+      </div>
 
-      {/* Navigation Links */}
-      <div className="flex flex-col p-2 space-y-2 mt-4">
+      {!isCollapsed ? <div className="flex flex-col p-2 text-sm">TODO Credits</div> : null}
+
+      <div className={cn("mt-4 flex flex-col p-2 space-y-2", isCollapsed && "px-0")}>
         {routes.map((route) => {
           const Icon = route.icon;
           const isActive =
@@ -56,9 +82,10 @@ function DesktopSidebar() {
               className={buttonVariants({
                 variant: isActive ? "sidebarActiveItems" : "sidebarItem",
               })}
+              title={route.label}
             >
               <Icon size={20} />
-              <span>{route.label}</span>
+              {!isCollapsed ? <span>{route.label}</span> : null}
             </Link>
           );
         })}

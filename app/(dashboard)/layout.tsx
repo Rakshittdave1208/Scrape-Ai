@@ -3,8 +3,9 @@
 
 import BreadcrumbHeader from '@/components/uiii/BreadcrumbHeader'
 import DesktopSidebar from '@/components/uiii/sidebar'
+import { MobileSidebar } from '@/components/uiii/sidebar'
 import { ModeToggle } from '@/components/uiii/ThemeModeToggle'
-import { SignedIn, SignIn, SignUp, UserButton } from '@clerk/nextjs'
+import { SignedIn, UserButton } from '@clerk/nextjs'
 
 import { Separator } from '@radix-ui/react-separator'
 import React from 'react'
@@ -14,9 +15,14 @@ const layout = ({ children }: { children: React.ReactNode }) => {
     <div className="flex h-screen">
       <DesktopSidebar />
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="flex items-center justify-center justify-between px-6 py-4 h-[50px] cointainer border-b-solid border-2">
-          <BreadcrumbHeader />
-          <div className="gap-1 flex items-center"><ModeToggle />
+        <header className="flex h-[56px] items-center justify-between border-b-2 px-4 py-3 md:px-6">
+          <div className="flex items-center gap-3">
+            <div className="md:hidden">
+              <MobileSidebar />
+            </div>
+            <BreadcrumbHeader />
+          </div>
+          <div className="flex items-center gap-1"><ModeToggle />
             <SignedIn >
               <UserButton />
             </SignedIn>
