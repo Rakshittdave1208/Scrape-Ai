@@ -192,7 +192,15 @@ function ArchitectureFlowInner({
 
   return (
     <div
-      className="relative h-full min-h-[720px] min-w-0 flex-1 overflow-hidden rounded-2xl border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),linear-gradient(to_bottom,_rgba(255,255,255,0.98),_rgba(248,250,252,1))] shadow-sm dark:border-slate-800/80 dark:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),_transparent_28%),linear-gradient(to_bottom,_rgba(2,6,23,0.98),_rgba(15,23,42,0.98))] xl:min-h-[860px]"
+      className="relative h-full min-h-[720px] 
+      min-w-0 flex-1 overflow-hidden rounded-2xl
+       border bg-[radial-gradient(circle_at_top,_rgba(59,130,246,0.08),_transparent_30%),
+       linear-gradient(to_bottom,_rgba(255,255,255,0.98),
+       _rgba(248,250,252,1))] 
+       shadow-sm dark:border-slate-800/80
+        dark:bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.12),
+        _transparent_28%),linear-gradient(to_bottom,_rgba(2,6,23,0.98),
+        _rgba(15,23,42,0.98))] xl:min-h-[860px]"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
@@ -241,7 +249,7 @@ function ArchitectureFlowInner({
         >
           <p className="font-semibold text-foreground">Architecture Canvas</p>
           <p className="max-w-xs text-xs text-muted-foreground">
-            Drag templates in from the left, connect services, and refine the system from the inspector.
+            Connect services and refine the system from the inspector.
           </p>
         </Panel>
 
