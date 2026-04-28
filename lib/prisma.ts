@@ -11,12 +11,31 @@ const adapter = new PrismaBetterSqlite3({
   timestampFormat: "unixepoch-ms",
 });
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+function createPrismaClient() {
+  return new PrismaClient({
     adapter,
   });
+}
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+function hasExpectedBillingModels(client: PrismaClient | undefined) {
+  if (!client) {
+    return false;
+  }
+
+  return "billingAccount" in client && "billingEvent" in client;
+}
+
+const prismaClient =
+  process.env.NODE_ENV === "production"
+    ? createPrismaClient()
+    : hasExpectedBillingModels(globalForPrisma.prisma)
+      ? globalForPrisma.prisma
+      : createPrismaClient();
+
+export const prisma = prismaClient;
+
+if (process.env.NODE_ENV !== "production") {
+  globalForPrisma.prisma = prisma;
+}
 
 export default prisma;

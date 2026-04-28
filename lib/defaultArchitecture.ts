@@ -14,6 +14,16 @@ export const ARCHITECTURE_STORAGE_KEY = "architecture-canvas-state";
 export const ARCHITECTURE_DAILY_CREDITS = 100_000;
 
 export type ArchitectureTemplate = (typeof architectureTemplates)[number];
+export type CustomArchitectureNodeDraft = {
+  baseTemplateKey: string;
+  label: string;
+  description: string;
+  category: ArchitectureCategory;
+  technology: string;
+  input: string;
+  config: Record<string, unknown>;
+  cost: number;
+};
 
 function cloneArchitectureNode(node: ArchitectureNode): ArchitectureNode {
   return {
@@ -69,6 +79,23 @@ export function createArchitectureNodeFromTemplate(
       status: overrides?.status ?? "idle",
     },
   };
+}
+
+export function createCustomArchitectureNode(
+  draft: CustomArchitectureNodeDraft,
+  position: XYPosition
+): ArchitectureNode {
+  return createArchitectureNodeFromTemplate(draft.baseTemplateKey, position, {
+    label: draft.label,
+    description: draft.description,
+    category: draft.category,
+    technology: draft.technology,
+    input: draft.input,
+    config: draft.config,
+    cost: draft.cost,
+    error: null,
+    status: "idle",
+  });
 }
 
 export function getCategoryTemplates(category: ArchitectureCategory) {

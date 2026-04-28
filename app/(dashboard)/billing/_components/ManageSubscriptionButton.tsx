@@ -4,10 +4,10 @@ import { useTransition } from "react";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 
-import { createCheckoutSession } from "@/actions/billing/createCheckoutSession";
+import { createCustomerPortalSession } from "@/actions/billing/createCustomerPortalSession";
 import { Button } from "@/components/ui/button";
 
-export default function CheckoutButton({
+export default function ManageSubscriptionButton({
   disabled,
 }: {
   disabled?: boolean;
@@ -16,20 +16,22 @@ export default function CheckoutButton({
 
   return (
     <Button
+      variant="outline"
       disabled={disabled || isPending}
       onClick={() => {
         startTransition(async () => {
           try {
-            const { url } = await createCheckoutSession();
+            const { url } = await createCustomerPortalSession();
             window.location.href = url;
           } catch (error) {
-            const message = error instanceof Error ? error.message : "Failed to start checkout";
+            const message =
+              error instanceof Error ? error.message : "Failed to open customer portal";
             toast.error(message);
           }
         });
       }}
     >
-      {isPending ? <Loader2Icon className="animate-spin" /> : "Upgrade to Pro"}
+      {isPending ? <Loader2Icon className="animate-spin" /> : "Manage subscription"}
     </Button>
   );
 }

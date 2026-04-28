@@ -154,6 +154,7 @@ export default function ArchitectureCanvas({ architectureId }: { architectureId:
     clearGraph,
     addNodeFromTemplate,
     addNodeAtDefaultPosition,
+    addCustomNodeAtDefaultPosition,
     updateNodeData,
     updateNodeCategory,
     updateEdgeLabel,
@@ -455,6 +456,7 @@ export default function ArchitectureCanvas({ architectureId }: { architectureId:
               edgesCount={edges.length}
               selectedLabel={selectedLabel}
               onAddTemplate={addNodeAtDefaultPosition}
+              onAddCustomNode={addCustomNodeAtDefaultPosition}
             />
           </div>
         ) : null}
@@ -485,6 +487,7 @@ export default function ArchitectureCanvas({ architectureId }: { architectureId:
             edgesCount={edges.length}
             selectedLabel={selectedLabel}
             onAddTemplate={addNodeAtDefaultPosition}
+            onAddCustomNode={addCustomNodeAtDefaultPosition}
           />
         ) : null}
 

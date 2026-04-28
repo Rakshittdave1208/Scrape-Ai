@@ -1,9 +1,13 @@
-import { CheckIcon, CpuIcon, SparklesIcon, WaypointsIcon, WorkflowIcon } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+import { CheckIcon, CpuIcon, CreditCardIcon, SparklesIcon, WaypointsIcon, WorkflowIcon } from "lucide-react";
 
 import CheckoutButton from "./_components/CheckoutButton";
+import ManageSubscriptionButton from "./_components/ManageSubscriptionButton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { PLANS } from "@/lib/billing/plans";
+import { getBillingAccountForUser, getPlanSummaryFromAccount } from "@/lib/billing/account";
+import { PLANS, resolvePlanKey } from "@/lib/billing/plans";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const planCards = [
   {
@@ -20,8 +24,24 @@ const planCards = [
   },
 ];
 
-export default function BillingPage() {
+export default async function BillingPage({
+  searchParams,
+}: {
+  searchParams?: { checkout?: string };
+}) {
+  const { userId } = await auth();
+  const billingAccount = userId ? await getBillingAccountForUser(userId) : null;
+  const currentPlan = billingAccount ? getPlanSummaryFromAccount(billingAccount) : getPlanSummaryFromAccount({
+    planKey: "FREE",
+    status: "free",
+    workflowCredits: PLANS.FREE.workflowCredits,
+    architectureCredits: PLANS.FREE.architectureCredits,
+    workflowLimit: PLANS.FREE.workflows,
+    stripeCurrentPeriodEnd: null,
+    stripeCancelAtPeriodEnd: false,
+  });
   const isStripeConfigured = Boolean(process.env.STRIPE_SECRET_KEY && PLANS.PRO.priceId);
+  const checkoutState = searchParams?.checkout;
 
   return (
     <div className="space-y-6">
@@ -37,6 +57,26 @@ export default function BillingPage() {
         </p>
       </section>
 
+      {checkoutState === "success" && (
+        <Alert>
+          <CreditCardIcon className="h-4 w-4" />
+          <AlertTitle>Checkout completed</AlertTitle>
+          <AlertDescription>
+            Stripe checkout completed. Your subscription status will update as soon as the webhook is processed.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {checkoutState === "cancelled" && (
+        <Alert>
+          <CreditCardIcon className="h-4 w-4" />
+          <AlertTitle>Checkout cancelled</AlertTitle>
+          <AlertDescription>
+            No changes were made to your plan. You can try again whenever you&apos;re ready.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {!isStripeConfigured && (
         <Card className="border-dashed">
           <CardHeader>
@@ -49,11 +89,79 @@ export default function BillingPage() {
         </Card>
       )}
 
+      <Card>
+        <CardHeader className="space-y-3">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-1">
+              <CardTitle className="text-2xl">Current Plan</CardTitle>
+              <CardDescription>
+                Billing now reads from your saved account state and Stripe subscription sync.
+              </CardDescription>
+            </div>
+            <Badge variant={currentPlan.key === "PRO" ? "default" : "outline"}>
+              {currentPlan.name}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid gap-3 xl:grid-cols-4">
+            <div className="rounded-lg border bg-secondary/30 p-4">
+              <p className="text-sm text-muted-foreground">Status</p>
+              <p className="mt-2 text-xl font-semibold capitalize">{currentPlan.status}</p>
+            </div>
+            <div className="rounded-lg border bg-secondary/30 p-4">
+              <p className="text-sm text-muted-foreground">Workflow Credits</p>
+              <p className="mt-2 text-xl font-semibold">{currentPlan.workflowCredits.toLocaleString()}</p>
+            </div>
+            <div className="rounded-lg border bg-secondary/30 p-4">
+              <p className="text-sm text-muted-foreground">Architecture Credits</p>
+              <p className="mt-2 text-xl font-semibold">{currentPlan.architectureCredits.toLocaleString()}</p>
+            </div>
+            <div className="rounded-lg border bg-secondary/30 p-4">
+              <p className="text-sm text-muted-foreground">Workflow Limit</p>
+              <p className="mt-2 text-xl font-semibold">{currentPlan.workflows}</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <span>Plan key: {resolvePlanKey(currentPlan.key)}</span>
+            <span>
+              Renewal:
+              {" "}
+              {currentPlan.currentPeriodEnd
+                ? currentPlan.currentPeriodEnd.toLocaleDateString()
+                : "Not scheduled"}
+            </span>
+            <span>
+              Cancel at period end:
+              {" "}
+              {currentPlan.cancelAtPeriodEnd ? "Yes" : "No"}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            {currentPlan.key === "PRO" ? (
+              <ManageSubscriptionButton
+                disabled={!isStripeConfigured || !Boolean(billingAccount?.stripeCustomerId)}
+              />
+            ) : (
+              <CheckoutButton disabled={!isStripeConfigured} />
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
       <section className="grid gap-4 xl:grid-cols-2">
         {planCards.map((plan) => (
           <Card
             key={plan.key}
-            className={plan.featured ? "border-primary shadow-sm" : ""}
+            className={
+              plan.key === currentPlan.key
+                ? "border-primary shadow-sm"
+                : plan.featured
+                  ? "border-primary/40 shadow-sm"
+                  : ""
+            }
           >
             <CardHeader className="space-y-3">
               <div className="flex items-start justify-between gap-3">
@@ -66,6 +174,9 @@ export default function BillingPage() {
                     <SparklesIcon size={12} />
                     Recommended
                   </Badge>
+                )}
+                {plan.key === currentPlan.key && (
+                  <Badge variant="outline">Current</Badge>
                 )}
               </div>
             </CardHeader>
@@ -117,10 +228,16 @@ export default function BillingPage() {
               </div>
 
               {plan.key === "PRO" ? (
-                <CheckoutButton disabled={!isStripeConfigured} />
+                currentPlan.key === "PRO" ? (
+                  <ManageSubscriptionButton
+                    disabled={!isStripeConfigured || !Boolean(billingAccount?.stripeCustomerId)}
+                  />
+                ) : (
+                  <CheckoutButton disabled={!isStripeConfigured} />
+                )
               ) : (
                 <div className="rounded-md border bg-muted/30 px-4 py-2 text-sm text-muted-foreground">
-                  {plan.cta}
+                  {plan.key === currentPlan.key ? "You are currently on this plan" : plan.cta}
                 </div>
               )}
             </CardContent>

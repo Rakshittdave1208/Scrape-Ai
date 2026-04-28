@@ -5,8 +5,10 @@ import { useEdgesState, useNodesState, type EdgeChange, type NodeChange, type XY
 
 import {
   createArchitectureNodeFromTemplate,
+  createCustomArchitectureNode,
   createDefaultArchitectureGraph,
   getArchitectureGraphStorageKey,
+  type CustomArchitectureNodeDraft,
   type ArchitectureTemplate,
 } from "@/lib/defaultArchitecture";
 import { touchArchitectureProject } from "@/lib/architecture/projects";
@@ -211,6 +213,25 @@ export function useCanvasState(architectureId: string) {
     [addNodeFromTemplate, nodes.length]
   );
 
+  const addCustomNode = useCallback(
+    (draft: CustomArchitectureNodeDraft, position: XYPosition) => {
+      const nextNode = createCustomArchitectureNode(draft, position);
+      setNodes((currentNodes) => [...currentNodes, nextNode]);
+      setSelectedNodeId(nextNode.id);
+      setSelectedEdgeId(null);
+      return nextNode;
+    },
+    [setNodes]
+  );
+
+  const addCustomNodeAtDefaultPosition = useCallback(
+    (draft: CustomArchitectureNodeDraft) => {
+      const offset = Math.max(0, nodes.length - 1) * 32;
+      return addCustomNode(draft, { x: 240 + offset, y: 220 + (offset % 160) });
+    },
+    [addCustomNode, nodes.length]
+  );
+
   const updateNodeData = useCallback(
     (nodeId: string, updates: Partial<ArchitectureNodeData>) => {
       setNodes((currentNodes) =>
@@ -319,6 +340,8 @@ export function useCanvasState(architectureId: string) {
     clearGraph,
     addNodeFromTemplate,
     addNodeAtDefaultPosition,
+    addCustomNode,
+    addCustomNodeAtDefaultPosition,
     updateNodeData,
     updateNodeCategory,
     updateEdgeLabel,

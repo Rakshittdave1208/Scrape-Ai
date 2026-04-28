@@ -18,3 +18,29 @@ export const PLANS = {
 } as const;
 
 export type PlanKey = keyof typeof PLANS;
+
+export function resolvePlanKey(planKey?: string | null): PlanKey {
+  return planKey === "PRO" ? "PRO" : "FREE";
+}
+
+export function getPlanSnapshot(planKey?: string | null) {
+  const resolvedPlanKey = resolvePlanKey(planKey);
+  const plan = PLANS[resolvedPlanKey];
+
+  return {
+    key: resolvedPlanKey,
+    name: plan.name,
+    workflowCredits: plan.workflowCredits,
+    architectureCredits: plan.architectureCredits,
+    workflows: plan.workflows,
+    priceId: plan.priceId,
+  };
+}
+
+export function getPlanKeyFromPriceId(priceId?: string | null): PlanKey {
+  if (priceId && priceId === PLANS.PRO.priceId) {
+    return "PRO";
+  }
+
+  return "FREE";
+}

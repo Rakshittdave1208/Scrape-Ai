@@ -70,8 +70,9 @@ export default function CreateWorkflowDialog({
 
           setOpen(false);
           router.push(`/workflows/editor/${result.workflowId}`);
-        } catch {
-          toast.error("Failed to create workflow", { id: "create-workflow" });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "Failed to create workflow";
+          toast.error(message, { id: "create-workflow" });
         }
       });
     },
