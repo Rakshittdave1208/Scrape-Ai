@@ -3,8 +3,10 @@
 [![Enterprise Grade](https://img.shields.io/badge/Enterprise-Grade-blue.svg)]()
 [![Architecture](https://img.shields.io/badge/Architecture-Universal-emerald.svg)]()
 [![Runtime](https://img.shields.io/badge/Runtime-Multi--Language-orange.svg)]()
+[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-7-blue.svg)](https://www.prisma.io/)
 
-**ScraperFlow** is a next-generation, universal AI automation infrastructure designed for enterprise-scale orchestration. Unlike static workflow editors, ScraperFlow is a dynamic execution platform built on the principles of total decoupling and schema-driven intelligence.
+**ScraperFlow** is a next-generation, universal AI automation infrastructure designed for enterprise-scale orchestration. Built with total decoupling and schema-driven intelligence, it provides a powerful visual interface for building complex scraping and automation pipelines.
 
 ---
 
@@ -14,92 +16,91 @@ ScraperFlow is engineered to be the operating system for enterprise integrations
 - **Universal Automation Infrastructure:** Connect any backend, any API, any runtime.
 - **Runtime Orchestration Engine:** Managing complex lifecycles across distributed systems.
 - **Dynamic Node Generation System:** AI-powered node generation from OpenAPI/Swagger specs.
-- **Multi-Language Runtime:** Native support for Node.js, Python, Java, Go, and Docker sandboxes.
 
 ---
 
-## 🏗 Core Architectural Pillars
+## 🚀 Key Features
 
-### 1. Frontend → Dynamic Visual Renderer
-A strictly visual orchestration layer. ZERO hardcoded node logic. All nodes, forms, and handles are rendered dynamically from JSON schemas.
-
-### 2. Backend → Runtime Execution Engine
-The brain of the platform. Controls credential injection, retry logic, queue management, and provider communication.
-
-### 3. Connectors → Pluggable Provider System
-A modular bridge to third-party services. Designed for "plug-and-play" integration with any external API or legacy system.
-
-### 4. Runtime Layer → Multi-Language Execution
-Distributed execution infrastructure supporting remote runtimes via HTTP, gRPC, or persistent WebSockets.
+- **Visual Workflow Builder:** Drag-and-drop interface powered by [React Flow](https://reactflow.dev/).
+- **AI-Powered Extraction:** Leverage AI to extract structured data from any webpage.
+- **Enterprise RBAC:** Sophisticated multi-tenancy with Organizations, Workspaces, and hierarchical roles.
+- **Secure Credential Management:** Isolated storage for API keys and secrets.
+- **Real-time Credit System:** Integrated billing and credit tracking (Stripe).
+- **Audit Logging:** Immutable records of every action for compliance and forensics.
 
 ---
 
-## 🔐 Enterprise RBAC & Governance
+## 🛠 Tech Stack
 
-Built for Fortune 500 compliance and multi-team collaboration.
-
-### Hierarchical Role System
-`SUPER_ADMIN` > `ORG_ADMIN` > `WORKSPACE_ADMIN` > `DEVELOPER` > `EDITOR` > `EXECUTOR` > `VIEWER`
-
-### Advanced Features
-- **Authority Inheritance:** Higher authority roles automatically inherit and can override lower-level permissions.
-- **Workflow Locking:** Real-time edit sessions to prevent concurrent conflict.
-- **Approval Pipeline:** Strict `Draft → Review → Approved → Published` lifecycle for production safety.
-- **Immutable Audit Logs:** Every action (edits, executions, permission changes) is recorded for forensic compliance.
-
----
-
-## 🚀 Core Features
-
-- **Dynamic Nodes:** Fully JSON-driven node definitions.
-- **Personal Nodes:** Users can define and store custom nodes in their own database.
-- **API Ingestion:** Instant node generation from OpenAPI/Swagger imports.
-- **Credential Manager:** Secure, isolated secret storage (secrets never touch workflow JSON).
-- **Queue Workers:** Built for horizontal scalability and high-volume processing.
-- **Docker Sandbox:** Secure execution of untrusted scripts in isolated environments.
+| Component | Technology |
+| :--- | :--- |
+| **Framework** | Next.js 14 (App Router) |
+| **Language** | TypeScript |
+| **ORM** | Prisma (SQLite/PostgreSQL) |
+| **Authentication** | Clerk (Enterprise SSO Ready) |
+| **Payments** | Stripe |
+| **Styling** | Tailwind CSS + Lucide Icons |
+| **Canvas** | @xyflow/react |
 
 ---
 
-## 🛠 Node Standard (JSON-Driven)
+## 🚦 Getting Started
 
-Every node in the system follows a strict, metadata-rich schema:
+### Prerequisites
 
-```json
-{
-  "id": "node-unique-id",
-  "provider": "openai | stripe | custom",
-  "runtime": "node | python | api",
-  "schema": {
-    "inputSchema": { ... },
-    "outputSchema": { ... }
-  },
-  "execution": {
-    "handler": "execution-path",
-    "config": { ... }
-  },
-  "inputs": [],
-  "outputs": []
-}
-```
+- Node.js 18+ 
+- npm or yarn
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Rakshittdave1208/Scrape-Ai.git
+   cd Scrape-Ai/scrape-flow
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Environment Variables:**
+   Create a `.env.local` file in the root and add the following:
+   ```env
+   DATABASE_URL="file:./dev.db"
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_pub_key
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   STRIPE_SECRET_KEY=your_stripe_secret_key
+   STRIPE_PRO_PRICE_ID=your_stripe_price_id
+   NEXT_PUBLIC_APP_URL="http://localhost:3000"
+   ```
+
+4. **Initialize the Database:**
+   ```bash
+   npx prisma generate
+   npx prisma migrate dev
+   ```
+
+5. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
 
 ---
 
-## 💻 Technical Stack
+## 🏗 Architectural Pillars
 
-- **Framework:** Next.js 14 (App Router)
-- **Language:** TypeScript
-- **Database:** Prisma ORM (Enterprise Multi-Tenancy)
-- **Auth:** Clerk (Enterprise SSO Ready)
-- **UI:** Custom Sharp-Edge Design System (Clash Display + Inter)
-- **Canvas:** @xyflow/react
+1. **Frontend:** Dynamic Visual Renderer (Schema-driven UI).
+2. **Backend:** Runtime Execution Engine (Node orchestration).
+3. **Connectors:** Pluggable Provider System (Modular APIs).
+4. **Governance:** Strict RBAC and Approval Pipelines.
 
 ---
 
 ## 🤝 Contributing
 
-This platform is architected for scale. Please refer to `GEMINI.md` for the absolute architectural rules and design system mandates before submitting a pull request.
+We welcome contributions! Please refer to [GEMINI.md](./GEMINI.md) for our absolute architectural rules and design system mandates before submitting a pull request.
 
 ---
 
-**Intelligent Hiring. Automated.** *(Note: Visual Identity Inspiration)*
 **Universal Automation. Realized.**
