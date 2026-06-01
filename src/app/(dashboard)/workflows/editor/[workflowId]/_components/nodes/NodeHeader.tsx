@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { TaskRegistry } from "@/lib/workflow/task/registry";
+import { useTaskRegistry } from "@/components/providers/TaskRegistryProvider";
 import { TaskType } from "@/types/task";
 import { useReactFlow } from "@xyflow/react";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,11 @@ function NodeHeader({
   nodeId: string;
   status: "idle" | "running" | "success" | "error";
 }) {
+  const TaskRegistry = useTaskRegistry();
   const task = TaskRegistry[taskType];
   const { deleteElements, getNode, setNodes } = useReactFlow();
+
+  if (!task) return null;
 
   return (
     <div className="drag-handle flex cursor-grab select-none items-center gap-2 rounded-t-none border-b border-slate-200/80 bg-gradient-to-r from-slate-50 via-white to-slate-50 p-3 active:cursor-grabbing dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
